@@ -160,7 +160,7 @@ module.exports = class Reddit
 				.set('User-Agent', @_userAgent)
 				.send(options)
 				.end (res) ->
-					
+					console.log res
 					if res.status is 200
 						
 						callback null, res
@@ -327,6 +327,74 @@ module.exports = class Reddit
 	 # Private Messages
 	###
 		
+	block: (thingId, modhash, callback) ->
+		
+		options =
+			id: thingId
+			uh: modhash
+		
+		params = Object.keys options
+		
+		@_post '/api/block', options, params, (error, res) ->
+		
+			return callback error if error?
+			
+			callback()
+
+	compose: (
+		captchaResponse
+		captchaId
+		subject
+		message
+		to
+		modhash
+		callback
+	) ->
+		
+		options =
+			captcha: captchaResponse
+			iden: captchaId
+			subject: subject
+			text: message
+			to: to
+			uh: modhash
+		
+		params = Object.keys options
+		
+		@_post '/api/block', options, params, (error, res) ->
+		
+			return callback error if error?
+			
+			callback()
+
+	readMessage: (thingId, modhash) ->
+		
+		options =
+			id: thingId
+			uh: modhash
+		
+		params = Object.keys options
+		
+		@_post '/api/read_message', options, params, (error, res) ->
+		
+			return callback error if error?
+			
+			callback()
+
+	unreadMessage: (thingId, modhash) ->
+		
+		options =
+			id: thingId
+			uh: modhash
+		
+		params = Object.keys options
+		
+		@_post '/api/unread_message', options, params, (error, res) ->
+		
+			return callback error if error?
+			
+			callback()
+
 	messages: (type, options, callback) ->
 		
 		if typeof type is 'function'
