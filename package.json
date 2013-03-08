@@ -6,10 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
+  "repository": "git://github.com/cha0s/reddit-api.git",
   "author": "cha0s",
   "license": "BSD",
   "dependencies": {
     "superagent": "~0.12.4"
+  },
+  "devDependencies": {
+    "grunt-contrib-coffee": "~0.6.0",
+    "grunt": "~0.4.0"
   }
 }
