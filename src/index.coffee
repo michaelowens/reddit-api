@@ -138,25 +138,20 @@ module.exports = class Reddit
 			.set('User-Agent', @_userAgent)
 			.send(options)
 			
-	login: (username, password, callback) ->
+	_post: (pathname, options, callback) ->
 		
 		details =
-			name: "Logging #{username} in"
-			options: {}
+			name: "PUT #{pathname}"
+			options: options
 		
 		@_enqueue details, (finished) =>
 			
-			@_postAgent('/api/login', {
-				api_type: 'json'
-				user: username
-				passwd: password
-				rem: false
-			})
+			@_postAgent(pathname, options)
 				.end (res) =>
 					
 					if res.status is 200
 						
-						callback null, res.body.json?.data?.modhash
+						callback null, res
 						
 					else
 						
@@ -164,6 +159,21 @@ module.exports = class Reddit
 						
 					finished()
 					
+	login: (username, password, callback) ->
+		
+		@_post(
+			'/api/login'
+				api_type: 'json'
+				user: username
+				passwd: password
+				rem: false
+			(error, res) ->
+			
+				return callback error if error?
+			
+				callback null, res.body.json?.data?.modhash
+		)
+				
 	_getAgent: (pathname, query = {}) ->
 				
 		@_agent
@@ -195,7 +205,7 @@ module.exports = class Reddit
 					
 					if res.status is 200
 						
-						callback null, res.body.data?.children
+						callback null, res
 						
 					else
 						
@@ -205,7 +215,11 @@ module.exports = class Reddit
 					
 	messages: (type = 'inbox', options, callback) ->
 		
-		@_get "/message/#{type}.json", options, callback
+		@_get "/message/#{type}.json", options, (error, res) ->
+			
+			return callback error if error?
+		
+			callback null, res.body.data?.children
 				
 	subredditPosts: (subreddit, type, options, callback) ->
 		
@@ -221,4 +235,8 @@ module.exports = class Reddit
 			options = {}
 			type = 'hot'
 			
-		@_get "/r/#{subreddit}/#{type}.json", options, callback
+		@_get "/r/#{subreddit}/#{type}.json", options, (error, res) ->
+		
+			return callback error if error?
+			
+			callback null, res.body.data?.children

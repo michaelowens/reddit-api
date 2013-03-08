@@ -20,6 +20,9 @@ Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 
+# Enable logging.
+reddit.setIsLogging true
+
 # Immediate dispatching.
 reddit.setDispatchMode 'immediate'
 
@@ -44,6 +47,9 @@ reddit.login user, password, (error) ->
 Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
+
+# Enable logging.
+reddit.setIsLogging true
 
 # Deferred dispatching.
 reddit.setDispatchMode 'deferred'
@@ -71,6 +77,9 @@ reddit.burst()
 Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
+
+# Enable logging.
+reddit.setIsLogging true
 
 # Rate-limited dispatching.
 reddit.setDispatchMode 'limited'

@@ -152,28 +152,37 @@
       })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', this._userAgent).send(options);
     };
 
-    Reddit.prototype.login = function(username, password, callback) {
+    Reddit.prototype._post = function(pathname, options, callback) {
       var details,
         _this = this;
       details = {
-        name: "Logging " + username + " in",
-        options: {}
+        name: "PUT " + pathname,
+        options: options
       };
       return this._enqueue(details, function(finished) {
-        return _this._postAgent('/api/login', {
-          api_type: 'json',
-          user: username,
-          passwd: password,
-          rem: false
-        }).end(function(res) {
-          var _ref, _ref1;
+        return _this._postAgent(pathname, options).end(function(res) {
           if (res.status === 200) {
-            callback(null, (_ref = res.body.json) != null ? (_ref1 = _ref.data) != null ? _ref1.modhash : void 0 : void 0);
+            callback(null, res);
           } else {
             callback(new Error(JSON.stringify(details)));
           }
           return finished();
         });
+      });
+    };
+
+    Reddit.prototype.login = function(username, password, callback) {
+      return this._post('/api/login', {
+        api_type: 'json',
+        user: username,
+        passwd: password,
+        rem: false
+      }, function(error, res) {
+        var _ref, _ref1;
+        if (error != null) {
+          return callback(error);
+        }
+        return callback(null, (_ref = res.body.json) != null ? (_ref1 = _ref.data) != null ? _ref1.modhash : void 0 : void 0);
       });
     };
 
@@ -202,9 +211,8 @@
       };
       return this._enqueue(details, function(finished) {
         return _this._getAgent(pathname, options).end(function(res) {
-          var _ref;
           if (res.status === 200) {
-            callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
+            callback(null, res);
           } else {
             callback(new Error(JSON.stringify(details)));
           }
@@ -217,7 +225,13 @@
       if (type == null) {
         type = 'inbox';
       }
-      return this._get("/message/" + type + ".json", options, callback);
+      return this._get("/message/" + type + ".json", options, function(error, res) {
+        var _ref;
+        if (error != null) {
+          return callback(error);
+        }
+        return callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
+      });
     };
 
     Reddit.prototype.subredditPosts = function(subreddit, type, options, callback) {
@@ -231,7 +245,13 @@
         options = {};
         type = 'hot';
       }
-      return this._get("/r/" + subreddit + "/" + type + ".json", options, callback);
+      return this._get("/r/" + subreddit + "/" + type + ".json", options, function(error, res) {
+        var _ref;
+        if (error != null) {
+          return callback(error);
+        }
+        return callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
+      });
     };
 
     return Reddit;
