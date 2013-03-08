@@ -29,12 +29,12 @@ reddit.login user, password, (error) ->
 
     throw error if error?
 
-	# Fetch subreddit posts operation.
-	reddit.subredditPosts 'trees', (error, posts) ->
-	
-	    throw error if error?
-	
-	    console.log posts
+	# Check the user's inbox.
+	reddit.messages (error, messages) ->
+		
+		throw error if error?
+		
+		console.log messages
 
 ```
 
@@ -57,14 +57,12 @@ reddit.login user, password, (error) ->
 	# Deferred dispatching.
 	reddit.setDispatchMode 'deferred'
 	
-	for subreddit in ['trees', 'programming', 'netsec']
-	
-		# Fetch subreddit posts operation.
-		reddit.subredditPosts 'trees', (error, posts) ->
+	# Check the user's inbox.
+	reddit.messages (error, messages) ->
 		
-		    throw error if error?
+		throw error if error?
 		
-		    console.log posts
+		console.log messages
 
 	console.log 'Chilling for 2 seconds before the burst!'
 	setTimeout(
@@ -93,12 +91,12 @@ reddit.login user, password, (error) ->
 
     throw error if error?
 
-# Fetch subreddit posts operation.
-reddit.subredditPosts 'trees', (error, posts) ->
-
-    throw error if error?
-
-    console.log posts
+# Check the user's inbox.
+reddit.messages (error, messages) ->
+	
+	throw error if error?
+	
+	console.log messages
 
 # Notification when all queued operations are complete.
 reddit.on 'drain', ->

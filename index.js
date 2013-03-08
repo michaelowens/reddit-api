@@ -141,26 +141,34 @@
       return this._logging;
     };
 
-    Reddit.prototype._postAgent = function(pathname, options) {
+    Reddit.prototype._post = function(pathname, options, params, callback) {
+      var details, error,
+        _this = this;
       if (options == null) {
         options = {};
       }
-      return this._agent.post(url.format({
-        protocol: 'https',
-        host: 'ssl.reddit.com',
-        pathname: pathname
-      })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', this._userAgent).send(options);
-    };
-
-    Reddit.prototype._post = function(pathname, options, callback) {
-      var details,
-        _this = this;
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      if (typeof options === 'function') {
+        callback = options;
+        params = [];
+        options = {};
+      }
+      if ((error = this._checkParams(options, params)) != null) {
+        return callback(error);
+      }
       details = {
-        name: "PUT " + pathname,
+        name: "POST " + pathname,
         options: options
       };
       return this._enqueue(details, function(finished) {
-        return _this._postAgent(pathname, options).end(function(res) {
+        return _this._agent.post(url.format({
+          protocol: 'https',
+          host: 'ssl.reddit.com',
+          pathname: pathname
+        })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', _this._userAgent).send(options).end(function(res) {
           if (res.status === 200) {
             callback(null, res);
           } else {
@@ -171,46 +179,35 @@
       });
     };
 
-    Reddit.prototype.login = function(username, password, callback) {
-      return this._post('/api/login', {
-        api_type: 'json',
-        user: username,
-        passwd: password,
-        rem: false
-      }, function(error, res) {
-        var _ref, _ref1;
-        if (error != null) {
-          return callback(error);
-        }
-        return callback(null, (_ref = res.body.json) != null ? (_ref1 = _ref.data) != null ? _ref1.modhash : void 0 : void 0);
-      });
-    };
-
-    Reddit.prototype._getAgent = function(pathname, query) {
-      if (query == null) {
-        query = {};
-      }
-      return this._agent.get(url.format({
-        protocol: 'https',
-        host: 'ssl.reddit.com',
-        pathname: pathname,
-        query: query
-      })).set('User-Agent', this._userAgent);
-    };
-
-    Reddit.prototype._get = function(pathname, options, callback) {
-      var details,
+    Reddit.prototype._get = function(pathname, options, params, callback) {
+      var details, error,
         _this = this;
+      if (options == null) {
+        options = {};
+      }
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
       if (typeof options === 'function') {
         callback = options;
+        params = [];
         options = {};
+      }
+      if ((error = this._checkParams(options, params)) != null) {
+        return callback(error);
       }
       details = {
         name: "GET " + pathname,
         options: options
       };
       return this._enqueue(details, function(finished) {
-        return _this._getAgent(pathname, options).end(function(res) {
+        return _this._agent.get(url.format({
+          protocol: 'https',
+          host: 'ssl.reddit.com',
+          pathname: pathname,
+          query: options
+        })).set('User-Agent', _this._userAgent).end(function(res) {
           if (res.status === 200) {
             callback(null, res);
           } else {
@@ -221,9 +218,143 @@
       });
     };
 
+    Reddit.prototype._checkParams = function(options, params) {
+      var missing, param, _i, _len;
+      missing = [];
+      for (_i = 0, _len = params.length; _i < _len; _i++) {
+        param = params[_i];
+        if (options[param] == null) {
+          missing.push(param);
+        }
+      }
+      missing = missing.join(', ');
+      if (missing !== '') {
+        return new Error("Missing parameters: " + missing);
+      }
+    };
+
+    /*
+    	 # Account
+    */
+
+
+    Reddit.prototype.clearSessions = function(modhash, password, url, callback) {
+      var options, params,
+        _this = this;
+      options = {
+        curpass: password,
+        dest: url,
+        uh: modhash
+      };
+      params = Object.keys(options);
+      return this._post('/api/clear_sessions', options, params, function(error, res) {
+        if (error != null) {
+          return callback(error);
+        }
+        return callback();
+      });
+    };
+
+    Reddit.prototype.deleteUser = function(username, password, modhash, callback) {
+      var options, params,
+        _this = this;
+      options = {
+        confirm: true,
+        passwd: password,
+        uh: modhash,
+        user: username
+      };
+      params = Object.keys(options);
+      return this._post('/api/delete_user', options, params, function(error, res) {
+        if (error != null) {
+          return callback(error);
+        }
+        return callback();
+      });
+    };
+
+    Reddit.prototype.login = function(username, password, callback) {
+      var options, params,
+        _this = this;
+      params = ['user', 'passwd'];
+      options = {
+        api_type: 'json',
+        user: username,
+        passwd: password,
+        rem: false
+      };
+      return this._post('/api/login', options, params, function(error, res) {
+        var _ref, _ref1, _ref2, _ref3, _ref4;
+        _this._agent.jar.setCookies(["reddit_session=" + ((_ref = res.body) != null ? (_ref1 = _ref.json) != null ? (_ref2 = _ref1.data) != null ? _ref2.cookie : void 0 : void 0 : void 0) + "; Domain=reddit.com; Path=/; HttpOnly"]);
+        if (error != null) {
+          return callback(error);
+        }
+        return callback(null, (_ref3 = res.body.json) != null ? (_ref4 = _ref3.data) != null ? _ref4.modhash : void 0 : void 0);
+      });
+    };
+
+    Reddit.prototype.me = function(callback) {
+      return this._get('/api/me.json', function(error, res) {
+        if (error != null) {
+          return callback(error);
+        }
+        return callback(null, res.body.data);
+      });
+    };
+
+    Reddit.prototype.update = function(password, email, newPassword, modhash, callback) {
+      var options, params;
+      options = {
+        curpass: password,
+        email: email,
+        newpass: newPassword,
+        uh: modhash,
+        verify: true,
+        verpass: newPassword
+      };
+      params = Object.keys(options);
+      return this._post('/api/update', options, params, function(error, res) {
+        if (error != null) {
+          return callback(error);
+        }
+        return callback();
+      });
+    };
+
+    /*
+    	 # Apps
+    */
+
+
+    /*
+    	 # Flair
+    */
+
+
+    /*
+    	 # Links & Comments
+    */
+
+
+    /*
+    	 # Listings
+    */
+
+
+    /*
+    	 # Private Messages
+    */
+
+
     Reddit.prototype.messages = function(type, options, callback) {
-      if (type == null) {
+      if (typeof type === 'function') {
+        callback = type;
+        options = {};
         type = 'inbox';
+      }
+      if (typeof options === 'function') {
+        callback = options;
+        options = {};
       }
       return this._get("/message/" + type + ".json", options, function(error, res) {
         var _ref;
@@ -234,25 +365,35 @@
       });
     };
 
-    Reddit.prototype.subredditPosts = function(subreddit, type, options, callback) {
-      if (typeof type === 'object') {
-        callback = options;
-        options = type;
-        type = 'hot';
-      }
-      if (typeof type === 'function') {
-        callback = type;
-        options = {};
-        type = 'hot';
-      }
-      return this._get("/r/" + subreddit + "/" + type + ".json", options, function(error, res) {
-        var _ref;
-        if (error != null) {
-          return callback(error);
-        }
-        return callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
-      });
-    };
+    /*
+    	 # Misc.
+    */
+
+
+    /*
+    	 # Moderation
+    */
+
+
+    /*
+    	 # Search
+    */
+
+
+    /*
+    	 # Subreddits
+    */
+
+
+    /*
+    	 # Users
+    */
+
+
+    /*
+    	 # Wiki
+    */
+
 
     return Reddit;
 

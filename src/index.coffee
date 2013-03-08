@@ -20,7 +20,7 @@ module.exports = class Reddit
 			req.cookies = @jar.getCookies(
 				CookieAccess 'reddit.com', '/', true
 			).toValueString()
-		
+			
 		@_dispatchMode = 'immediate'
 		
 		@_queue = []
@@ -124,30 +124,42 @@ module.exports = class Reddit
 		
 	isLogging: -> @_logging
 	
-	_postAgent: (pathname, options = {}) ->
+	_post: (pathname, options, params, callback) ->
 		
-		@_agent
-			.post(
-				url.format(
-					protocol: 'https'
-					host: 'ssl.reddit.com'
-					pathname: pathname
-				)
-			)
-			.set('Content-Type', 'application/x-www-form-urlencoded')
-			.set('User-Agent', @_userAgent)
-			.send(options)
+		options ?= {}
+		
+		if typeof params is 'function'
 			
-	_post: (pathname, options, callback) ->
+			callback = params
+			params = []
+		
+		if typeof options is 'function'
+			
+			callback = options
+			params = []
+			options = {}
+		
+		if (error = @_checkParams options, params)?
+			return callback error
 		
 		details =
-			name: "PUT #{pathname}"
+			name: "POST #{pathname}"
 			options: options
 		
 		@_enqueue details, (finished) =>
 			
-			@_postAgent(pathname, options)
-				.end (res) =>
+			@_agent
+				.post(
+					url.format(
+						protocol: 'https'
+						host: 'ssl.reddit.com'
+						pathname: pathname
+					)
+				)
+				.set('Content-Type', 'application/x-www-form-urlencoded')
+				.set('User-Agent', @_userAgent)
+				.send(options)
+				.end (res) ->
 					
 					if res.status is 200
 						
@@ -159,40 +171,23 @@ module.exports = class Reddit
 						
 					finished()
 					
-	login: (username, password, callback) ->
+	_get: (pathname, options, params, callback) ->
 		
-		@_post(
-			'/api/login'
-				api_type: 'json'
-				user: username
-				passwd: password
-				rem: false
-			(error, res) ->
+		options ?= {}
 			
-				return callback error if error?
+		if typeof params is 'function'
 			
-				callback null, res.body.json?.data?.modhash
-		)
-				
-	_getAgent: (pathname, query = {}) ->
-				
-		@_agent
-			.get(
-				url.format(
-					protocol: 'https'
-					host: 'ssl.reddit.com'
-					pathname: pathname
-					query: query
-				)
-			)
-			.set('User-Agent', @_userAgent)
-	
-	_get: (pathname, options, callback) ->
+			callback = params
+			params = []
 			
 		if typeof options is 'function'
 			
 			callback = options
+			params = []
 			options = {}
+		
+		if (error = @_checkParams options, params)?
+			return callback error
 		
 		details =
 			name: "GET #{pathname}"
@@ -200,8 +195,17 @@ module.exports = class Reddit
 		
 		@_enqueue details, (finished) =>
 			
-			@_getAgent(pathname, options)
-				.end (res) =>
+			@_agent
+				.get(
+					url.format(
+						protocol: 'https'
+						host: 'ssl.reddit.com'
+						pathname: pathname
+						query: options
+					)
+				)
+				.set('User-Agent', @_userAgent)
+				.end (res) ->
 					
 					if res.status is 200
 						
@@ -212,8 +216,129 @@ module.exports = class Reddit
 						callback new Error JSON.stringify details
 						
 					finished()
-					
-	messages: (type = 'inbox', options, callback) ->
+	
+	_checkParams: (options, params) ->
+		
+		missing = []
+		for param in params
+			missing.push param unless options[param]?
+		missing = missing.join ', '
+		
+		new Error "Missing parameters: #{missing}" unless missing is ''
+
+	###
+	 # Account
+	###
+		
+	clearSessions: (modhash, password, url, callback) ->
+		
+		options =
+			curpass: password
+			dest: url
+			uh: modhash
+		
+		params = Object.keys options
+		
+		@_post '/api/clear_sessions', options, params, (error, res) =>
+			
+			return callback error if error?
+			
+			callback()
+				
+	deleteUser: (username, password, modhash, callback) ->
+		
+		options =
+			confirm: true
+			passwd: password
+			uh: modhash
+			user: username
+		
+		params = Object.keys options
+		
+		@_post '/api/delete_user', options, params, (error, res) =>
+			
+			return callback error if error?
+			
+			callback()
+				
+	login: (username, password, callback) ->
+		
+		params = ['user', 'passwd']
+		
+		options =
+			api_type: 'json'
+			user: username
+			passwd: password
+			rem: false
+		
+		@_post '/api/login', options, params, (error, res) =>
+			
+			@_agent.jar.setCookies([
+				"reddit_session=#{res.body?.json?.data?.cookie}; Domain=reddit.com; Path=/; HttpOnly"
+			])
+			
+			return callback error if error?
+		
+			callback null, res.body.json?.data?.modhash
+	
+	me: (callback) ->
+				
+		@_get '/api/me.json', (error, res) ->
+		
+			return callback error if error?
+			
+			callback null, res.body.data
+
+	update: (password, email, newPassword, modhash, callback) ->
+		
+		options =
+			curpass: password
+			email: email
+			newpass: newPassword
+			uh: modhash
+			verify: true
+			verpass: newPassword
+		
+		params = Object.keys options
+		
+		@_post '/api/update', options, params, (error, res) ->
+		
+			return callback error if error?
+			
+			callback()
+
+	###
+	 # Apps
+	###
+		
+	###
+	 # Flair
+	###
+		
+	###
+	 # Links & Comments
+	###
+		
+	###
+	 # Listings
+	###
+		
+	###
+	 # Private Messages
+	###
+		
+	messages: (type, options, callback) ->
+		
+		if typeof type is 'function'
+			
+			callback = type
+			options = {}
+			type = 'inbox'
+			
+		if typeof options is 'function'
+			
+			callback = options
+			options = {}
 		
 		@_get "/message/#{type}.json", options, (error, res) ->
 			
@@ -221,22 +346,26 @@ module.exports = class Reddit
 		
 			callback null, res.body.data?.children
 				
-	subredditPosts: (subreddit, type, options, callback) ->
+	###
+	 # Misc.
+	###
 		
-		if typeof type is 'object'
-			
-			callback = options
-			options = type
-			type = 'hot'
+	###
+	 # Moderation
+	###
 		
-		if typeof type is 'function'
-			
-			callback = type
-			options = {}
-			type = 'hot'
-			
-		@_get "/r/#{subreddit}/#{type}.json", options, (error, res) ->
+	###
+	 # Search
+	###
 		
-			return callback error if error?
-			
-			callback null, res.body.data?.children
+	###
+	 # Subreddits
+	###
+		
+	###
+	 # Users
+	###
+		
+	###
+	 # Wiki
+	###
