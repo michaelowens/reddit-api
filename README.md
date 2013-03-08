@@ -20,7 +20,7 @@ Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 
-# Automatic rate limiting.
+# Immediate dispatching.
 reddit.setDispatchMode 'immediate'
 
 # Login operation.  
@@ -45,7 +45,7 @@ Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 
-# Automatic rate limiting.
+# Deferred dispatching.
 reddit.setDispatchMode 'deferred'
 
 # Login operation.  
@@ -72,7 +72,7 @@ Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 
-# Automatic rate limiting.
+# Rate-limited dispatching.
 reddit.setDispatchMode 'limited'
 
 # Login operation.  
