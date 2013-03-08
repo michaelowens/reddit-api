@@ -53,6 +53,8 @@ module.exports = class Reddit
 				@_stopDispatching()
 				
 				'immediate'
+				
+		console.log "Set dispatch mode to #{@_dispatchMode}" if @isLogging()
 			
 	dispatchMode: -> @_dispatchMode
 	
@@ -118,7 +120,7 @@ module.exports = class Reddit
 	
 	setIsLogging: (@_logging) ->
 		
-		console.log "Logging turned #{if @_logging then 'on' else 'off'}" if @isLogging()
+		console.log "Logging turned #{if @_logging then 'on' else 'off'}"
 		
 	isLogging: -> @_logging
 	

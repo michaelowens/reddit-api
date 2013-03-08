@@ -34,7 +34,7 @@
     util.inherits(Reddit, events.EventEmitter);
 
     Reddit.prototype.setDispatchMode = function(dispatchMode) {
-      return this._dispatchMode = (function() {
+      this._dispatchMode = (function() {
         switch (dispatchMode) {
           case 'limited':
             this._startDispatching();
@@ -47,6 +47,9 @@
             return 'immediate';
         }
       }).call(this);
+      if (this.isLogging()) {
+        return console.log("Set dispatch mode to " + this._dispatchMode);
+      }
     };
 
     Reddit.prototype.dispatchMode = function() {
@@ -131,9 +134,7 @@
 
     Reddit.prototype.setIsLogging = function(_logging) {
       this._logging = _logging;
-      if (this.isLogging()) {
-        return console.log("Logging turned " + (this._logging ? 'on' : 'off'));
-      }
+      return console.log("Logging turned " + (this._logging ? 'on' : 'off'));
     };
 
     Reddit.prototype.isLogging = function() {
