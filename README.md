@@ -13,32 +13,86 @@ Please don't mind the coffeescript example for the time being. Again, this is a 
 You would launch this like:
 `user=foo password=bar coffee test.coffee`
 
+## Immediate mode (default):
+
 ```
 Reddit = require 'reddit-api'
 
 reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 
 # Automatic rate limiting.
-reddit.startDispatching()
+reddit.setDispatchMode 'immediate'
 
-# Login operation.	
+# Login operation.  
 {user, password} = process.env
 reddit.login user, password, (error) ->
+
+    throw error if error?
+
+	# Fetch subreddit posts operation.
+	reddit.subredditPosts 'trees', (error, posts) ->
 	
-	throw error if error?
+	    throw error if error?
+	
+	    console.log posts
+
+```
+
+## Deferred (burst) mode:
+
+```
+Reddit = require 'reddit-api'
+
+reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
+
+# Automatic rate limiting.
+reddit.setDispatchMode 'deferred'
+
+# Login operation.  
+{user, password} = process.env
+reddit.login user, password, (error) ->
+
+    throw error if error?
+
+	# Fetch subreddit posts operation.
+	reddit.subredditPosts 'trees', (error, posts) ->
+	
+	    throw error if error?
+	
+	    console.log posts
+
+reddit.burst()
+
+```
+
+## Rate-limited mode:
+
+```
+Reddit = require 'reddit-api'
+
+reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
+
+# Automatic rate limiting.
+reddit.setDispatchMode 'limited'
+
+# Login operation.  
+{user, password} = process.env
+reddit.login user, password, (error) ->
+
+    throw error if error?
 
 # Fetch subreddit posts operation.
 reddit.subredditPosts 'trees', (error, posts) ->
-	
-	throw error if error?
-	
-	console.log posts
+
+    throw error if error?
+
+    console.log posts
 
 # Notification when all queued operations are complete.
-reddit.on 'dispatchingFinished', ->
-	
-	# Shut it down.
-	reddit.stopDispatching()
+reddit.on 'drain', ->
+
+    # Shut it down.
+    reddit.setDispatchMode 'immediate'
 
 ```
 

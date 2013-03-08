@@ -11,7 +11,7 @@
 
   util = require('util');
 
-  Reddit = (function() {
+  module.exports = Reddit = (function() {
 
     function Reddit(_userAgent) {
       this._userAgent = _userAgent;
@@ -23,61 +23,110 @@
       this._agent.attachCookies = function(req) {
         return req.cookies = this.jar.getCookies(CookieAccess('reddit.com', '/', true)).toValueString();
       };
+      this._dispatchMode = 'immediate';
       this._queue = [];
-      this._dispatchInterval = null;
+      this._queueCount = 0;
+      this._limiterFrequency = 2100;
+      this._limiterInterval = null;
       this._logging = false;
     }
 
     util.inherits(Reddit, events.EventEmitter);
 
+    Reddit.prototype.setDispatchMode = function(dispatchMode) {
+      return this._dispatchMode = (function() {
+        switch (dispatchMode) {
+          case 'limited':
+            this._startDispatching();
+            return 'limited';
+          case 'deferred':
+            this._stopDispatching();
+            return 'deferred';
+          default:
+            this._stopDispatching();
+            return 'immediate';
+        }
+      }).call(this);
+    };
+
+    Reddit.prototype.dispatchMode = function() {
+      return this._dispatchMode;
+    };
+
+    Reddit.prototype.burst = function() {
+      var _results;
+      _results = [];
+      while (this._queue.length > 0) {
+        _results.push(this._dispatch());
+      }
+      return _results;
+    };
+
     Reddit.prototype._dispatch = function() {
-      var dispatching, name,
+      var dispatching,
         _this = this;
       if (this._queue.length === 0) {
         return;
       }
       dispatching = this._queue.shift();
       if (this.isLogging()) {
-        name = dispatching.details.name;
-        delete dispatching.details.name;
-        console.log(name, dispatching.details);
+        console.log('Dispatching:', dispatching);
       }
       return dispatching.callback(function() {
-        if (_this._queue.length === 0) {
-          return _this.emit('dispatchingFinished');
+        _this._queueCount -= 1;
+        if (_this._queueCount === 0) {
+          return _this.emit('drain');
         }
       });
     };
 
     Reddit.prototype._enqueue = function(details, callback) {
-      return this._queue.push({
-        details: details,
-        callback: callback
-      });
+      switch (this.dispatchMode()) {
+        case 'immediate':
+          if (this.isLogging()) {
+            console.log('Dispatching:', details);
+          }
+          return callback(function() {});
+        case 'deferred':
+        case 'limited':
+          if (this.isLogging()) {
+            console.log('Enqueueing:', details);
+          }
+          this._queue.push({
+            details: details,
+            callback: callback
+          });
+          return this._queueCount += 1;
+      }
     };
 
-    Reddit.prototype.startDispatching = function(ms) {
-      if (ms == null) {
-        ms = 2100;
-      }
-      if (this._dispatchInterval != null) {
+    Reddit.prototype._startDispatching = function() {
+      if (this._limiterInterval != null) {
         return;
       }
       if (this.isLogging()) {
         console.log("Dispatching started");
       }
-      return this._dispatchInterval = setInterval(this._dispatch.bind(this), ms);
+      return this._limiterInterval = setInterval(this._dispatch.bind(this), this._limiterFrequency);
     };
 
-    Reddit.prototype.stopDispatching = function() {
-      if (this._dispatchInterval == null) {
+    Reddit.prototype._stopDispatching = function() {
+      if (this._limiterInterval == null) {
         return;
       }
       if (this.isLogging()) {
         console.log("Dispatching stopped");
       }
-      clearInterval(this._dispatchInterval);
-      return this._dispatchInterval = null;
+      clearInterval(this._limiterInterval);
+      return this._limiterInterval = null;
+    };
+
+    Reddit.prototype.setLimiterFrequency = function(_limiterFrequency) {
+      this._limiterFrequency = _limiterFrequency;
+    };
+
+    Reddit.prototype.limiterFrequency = function() {
+      return this._limiterFrequency;
     };
 
     Reddit.prototype.setIsLogging = function(_logging) {
@@ -112,7 +161,7 @@
       return this._enqueue(details, function(finished) {
         return _this._postAgent('/api/login', {
           api_type: 'json',
-          user: user,
+          user: username,
           passwd: password,
           rem: false
         }).end(function(res) {

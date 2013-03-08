@@ -4,7 +4,7 @@ superagent = require 'superagent'
 url = require 'url'
 util = require 'util'
 
-class Reddit
+module.exports = class Reddit
 	
 	constructor: (@_userAgent) ->
 		
@@ -21,12 +21,42 @@ class Reddit
 				CookieAccess 'reddit.com', '/', true
 			).toValueString()
 		
+		@_dispatchMode = 'immediate'
+		
 		@_queue = []
-		@_dispatchInterval = null
+		@_queueCount = 0
+		@_limiterFrequency = 2100
+		@_limiterInterval = null
 		
 		@_logging = false
 		
 	util.inherits Reddit, events.EventEmitter
+	
+	setDispatchMode: (dispatchMode) ->
+		
+		@_dispatchMode = switch dispatchMode
+			
+			when 'limited'
+				
+				@_startDispatching()
+				
+				'limited'
+			
+			when 'deferred'
+				
+				@_stopDispatching()
+				
+				'deferred'
+				
+			else
+				
+				@_stopDispatching()
+				
+				'immediate'
+			
+	dispatchMode: -> @_dispatchMode
+	
+	burst: -> @_dispatch() while @_queue.length > 0
 	
 	_dispatch: ->
 		
@@ -36,38 +66,55 @@ class Reddit
 		
 		if @isLogging()
 			
-			name = dispatching.details.name
-			delete dispatching.details.name
-			
-			console.log name, dispatching.details
+			console.log 'Dispatching:', dispatching
 		
 		dispatching.callback =>
+			
+			@_queueCount -= 1
 		
-			@emit 'dispatchingFinished' if @_queue.length is 0
+			@emit 'drain' if @_queueCount is 0
 	
 	_enqueue: (details, callback) ->
 		
-		@_queue.push details: details, callback: callback
+		switch @dispatchMode()
+		
+			when 'immediate'
+				
+				console.log 'Dispatching:', details if @isLogging()
+				
+				callback ->
+				
+			when 'deferred', 'limited'
+		
+				console.log 'Enqueueing:', details if @isLogging()
+		
+				@_queue.push details: details, callback: callback
+				
+				@_queueCount += 1
 	
-	startDispatching: (ms = 2100) ->
+	_startDispatching: ->
 	
-		return if @_dispatchInterval?
+		return if @_limiterInterval?
 		
 		console.log "Dispatching started" if @isLogging()
 		
-		@_dispatchInterval = setInterval(
+		@_limiterInterval = setInterval(
 			@_dispatch.bind this
-			ms
+			@_limiterFrequency
 		)
 	
-	stopDispatching: ->
+	_stopDispatching: ->
 	
-		return unless @_dispatchInterval?
+		return unless @_limiterInterval?
 		
 		console.log "Dispatching stopped" if @isLogging()
 		
-		clearInterval @_dispatchInterval
-		@_dispatchInterval = null
+		clearInterval @_limiterInterval
+		@_limiterInterval = null
+	
+	setLimiterFrequency: (@_limiterFrequency) ->
+	
+	limiterFrequency: -> @_limiterFrequency
 	
 	setIsLogging: (@_logging) ->
 		
@@ -99,7 +146,7 @@ class Reddit
 			
 			@_postAgent('/api/login', {
 				api_type: 'json'
-				user: user
+				user: username
 				passwd: password
 				rem: false
 			})
