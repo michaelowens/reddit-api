@@ -98,5 +98,4 @@ reddit.on 'drain', ->
 
 # TODO
 
-* Use the limiter by default, but allow bursting
 * Obviously, implement more of the API including OAuth
