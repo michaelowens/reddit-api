@@ -1,9 +1,11 @@
 (function() {
-  var CookieAccess, Reddit, events, superagent, url, util;
+  var CookieAccess, Reddit, events, path, superagent, url, util;
 
   CookieAccess = require('superagent/node_modules/cookiejar').CookieAccessInfo;
 
   events = require('events');
+
+  path = require('path');
 
   superagent = require('superagent');
 
@@ -12,6 +14,7 @@
   util = require('util');
 
   module.exports = Reddit = (function() {
+    var category, _i, _len, _ref;
 
     function Reddit(_userAgent) {
       this._userAgent = _userAgent;
@@ -169,7 +172,6 @@
           host: 'ssl.reddit.com',
           pathname: pathname
         })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', _this._userAgent).send(options).end(function(res) {
-          console.log(res);
           if (res.status === 200) {
             callback(null, res);
           } else {
@@ -235,230 +237,15 @@
     };
 
     /*
-    	 # Account
+    	 # Include the API categories.
     */
 
 
-    Reddit.prototype.clearSessions = function(modhash, password, url, callback) {
-      var options, params,
-        _this = this;
-      options = {
-        curpass: password,
-        dest: url,
-        uh: modhash
-      };
-      params = Object.keys(options);
-      return this._post('/api/clear_sessions', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.deleteUser = function(username, password, modhash, callback) {
-      var options, params,
-        _this = this;
-      options = {
-        confirm: true,
-        passwd: password,
-        uh: modhash,
-        user: username
-      };
-      params = Object.keys(options);
-      return this._post('/api/delete_user', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.login = function(username, password, callback) {
-      var options, params,
-        _this = this;
-      params = ['user', 'passwd'];
-      options = {
-        api_type: 'json',
-        user: username,
-        passwd: password,
-        rem: false
-      };
-      return this._post('/api/login', options, params, function(error, res) {
-        var _ref, _ref1, _ref2, _ref3, _ref4;
-        _this._agent.jar.setCookies(["reddit_session=" + ((_ref = res.body) != null ? (_ref1 = _ref.json) != null ? (_ref2 = _ref1.data) != null ? _ref2.cookie : void 0 : void 0 : void 0) + "; Domain=reddit.com; Path=/; HttpOnly"]);
-        if (error != null) {
-          return callback(error);
-        }
-        return callback(null, (_ref3 = res.body.json) != null ? (_ref4 = _ref3.data) != null ? _ref4.modhash : void 0 : void 0);
-      });
-    };
-
-    Reddit.prototype.me = function(callback) {
-      return this._get('/api/me.json', function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback(null, res.body.data);
-      });
-    };
-
-    Reddit.prototype.update = function(password, email, newPassword, modhash, callback) {
-      var options, params;
-      options = {
-        curpass: password,
-        email: email,
-        newpass: newPassword,
-        uh: modhash,
-        verify: true,
-        verpass: newPassword
-      };
-      params = Object.keys(options);
-      return this._post('/api/update', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    /*
-    	 # Apps
-    */
-
-
-    /*
-    	 # Flair
-    */
-
-
-    /*
-    	 # Links & Comments
-    */
-
-
-    /*
-    	 # Listings
-    */
-
-
-    /*
-    	 # Private Messages
-    */
-
-
-    Reddit.prototype.block = function(thingId, modhash, callback) {
-      var options, params;
-      options = {
-        id: thingId,
-        uh: modhash
-      };
-      params = Object.keys(options);
-      return this._post('/api/block', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.compose = function(captchaResponse, captchaId, subject, message, to, modhash, callback) {
-      var options, params;
-      options = {
-        captcha: captchaResponse,
-        iden: captchaId,
-        subject: subject,
-        text: message,
-        to: to,
-        uh: modhash
-      };
-      params = Object.keys(options);
-      return this._post('/api/block', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.readMessage = function(thingId, modhash) {
-      var options, params;
-      options = {
-        id: thingId,
-        uh: modhash
-      };
-      params = Object.keys(options);
-      return this._post('/api/read_message', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.unreadMessage = function(thingId, modhash) {
-      var options, params;
-      options = {
-        id: thingId,
-        uh: modhash
-      };
-      params = Object.keys(options);
-      return this._post('/api/unread_message', options, params, function(error, res) {
-        if (error != null) {
-          return callback(error);
-        }
-        return callback();
-      });
-    };
-
-    Reddit.prototype.messages = function(type, options, callback) {
-      if (typeof type === 'function') {
-        callback = type;
-        options = {};
-        type = 'inbox';
-      }
-      if (typeof options === 'function') {
-        callback = options;
-        options = {};
-      }
-      return this._get("/message/" + type + ".json", options, function(error, res) {
-        var _ref;
-        if (error != null) {
-          return callback(error);
-        }
-        return callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
-      });
-    };
-
-    /*
-    	 # Misc.
-    */
-
-
-    /*
-    	 # Moderation
-    */
-
-
-    /*
-    	 # Search
-    */
-
-
-    /*
-    	 # Subreddits
-    */
-
-
-    /*
-    	 # Users
-    */
-
-
-    /*
-    	 # Wiki
-    */
-
+    _ref = ['account', 'apps', 'flair', 'links-and-comments', 'listings', 'private-messages', 'misc', 'moderation', 'search', 'subreddits', 'users', 'wiki'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      category = _ref[_i];
+      require('.' + path.sep + path.join('api', category))(Reddit);
+    }
 
     return Reddit;
 
