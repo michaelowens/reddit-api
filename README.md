@@ -51,23 +51,29 @@ reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 # Enable logging.
 reddit.setIsLogging true
 
-# Deferred dispatching.
-reddit.setDispatchMode 'deferred'
-
 # Login operation.  
 {user, password} = process.env
 reddit.login user, password, (error) ->
 
     throw error if error?
 
-	# Fetch subreddit posts operation.
-	reddit.subredditPosts 'trees', (error, posts) ->
+	# Deferred dispatching.
+	reddit.setDispatchMode 'deferred'
 	
-	    throw error if error?
+	for subreddit in ['trees', 'programming', 'netsec']
 	
-	    console.log posts
+		# Fetch subreddit posts operation.
+		reddit.subredditPosts 'trees', (error, posts) ->
+		
+		    throw error if error?
+		
+		    console.log posts
 
-reddit.burst()
+	console.log 'Chilling for 2 seconds before the burst!'
+	setTimeout(
+		-> reddit.burst()
+		2000
+	)
 
 ```
 
