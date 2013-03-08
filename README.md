@@ -23,9 +23,6 @@ reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 # Enable logging.
 reddit.setIsLogging true
 
-# Immediate dispatching.
-reddit.setDispatchMode 'immediate'
-
 # Login operation.  
 {user, password} = process.env
 reddit.login user, password, (error) ->
