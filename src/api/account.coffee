@@ -75,6 +75,7 @@ module.exports = (Reddit) ->
 			
 			@_agent
 				.post("https://#{clientId}:#{clientSecret}@ssl.reddit.com/api/v1/access_token")
+				.set('Content-Type', 'application/x-www-form-urlencoded')
 				.set('User-Agent', @_userAgent)
 				.send(options)
 				.end (res) ->
