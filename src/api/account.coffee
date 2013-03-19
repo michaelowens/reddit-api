@@ -52,6 +52,69 @@ module.exports = (Reddit) ->
 		
 			callback null, res.body.json?.data?.modhash
 	
+	Reddit::oAuthAuthorize = (clientId, clientSecret, state, code, scope = ['identity'], callback) ->
+		
+		if typeof scope is 'function'
+			
+			callback = scope
+			scope = ['identity']
+	
+		options =
+			state: state
+			scope: scope.join ','
+			client_id: 'tMsPeTkhps5_tg'
+			redirect_uri: 'http://reddichat.com/reddit/oauth'
+			code: code
+			grant_type: 'authorization_code'
+		
+		details =
+			name: "reddit OAuth authorization"
+			options: options
+		
+		@_enqueue details, (finished) =>
+			
+			@_agent
+				.post("https://#{clientId}:#{clientSecret}@ssl.reddit.com/api/v1/access_token")
+				.set('User-Agent', @_userAgent)
+				.send(options)
+				.end (res) ->
+					
+					if res.status is 200
+						
+						callback null, res.body
+						
+					else
+						
+						callback new Error JSON.stringify details
+						
+					
+					finished() 
+		
+	Reddit::oAuthMe = (token, callback) ->
+		
+		details =
+			name: "reddit OAuth Me"
+			options:
+				token: token
+		
+		@_enqueue details, (finished) =>
+			
+			@_agent
+				.get('https://oauth.reddit.com/api/v1/me')
+				.set('Authorization', "bearer #{token}")
+				.set('User-Agent', @_userAgent)
+				.end (res) ->
+					
+					if res.status is 200
+						
+						callback null, res.body
+						
+					else
+						
+						callback new Error JSON.stringify details
+						
+					finished() 
+					
 	Reddit::me = (callback) ->
 				
 		@_get '/api/me.json', (error, res) ->
