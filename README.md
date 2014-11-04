@@ -4,11 +4,11 @@ This is a project to wrap and make the Reddit API easily accessible to your node
 
 See [the Reddit API documentation](http://www.reddit.com/dev/api) for details on what to do.
 
-Please note, this is not finished. I will be developing it as I go. I am working on my own projects to leverage the reddit API, so I started the effort. Pull requests are very welcome!
+Please note, this is not finished. ~~I will be developing it as I go~~ _He didn't_. I am working on my own projects to leverage the reddit API, so I started the effort. Pull requests are very welcome!
 
 # Example
 
-Please don't mind the coffeescript example for the time being. Again, this is a work in prorgess. :)
+Please don't mind the coffeescript example for the time being. ~~Again, this is a work in prorgess. :)~~ This is a work not in progress.
 
 You would launch this like:
 `user=foo password=bar coffee test.coffee`
