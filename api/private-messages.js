@@ -11,7 +11,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback();
+        return callback.apply(res);
       });
     };
     Reddit.prototype.compose = function(captchaResponse, captchaId, subject, message, to, modhash, callback) {
@@ -29,7 +29,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback();
+        return callback.apply(res);
       });
     };
     Reddit.prototype.readMessage = function(thingId, modhash) {
@@ -43,7 +43,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback();
+        return callback.apply(res);
       });
     };
     Reddit.prototype.unreadMessage = function(thingId, modhash) {
@@ -57,7 +57,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback();
+        return callback.apply(res);
       });
     };
     return Reddit.prototype.messages = function(type, options, callback) {

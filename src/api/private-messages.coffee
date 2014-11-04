@@ -1,8 +1,6 @@
 
 module.exports = (Reddit) ->
-
 	Reddit::block = (thingId, modhash, callback) ->
-		
 		options =
 			id: thingId
 			uh: modhash
@@ -10,10 +8,9 @@ module.exports = (Reddit) ->
 		params = Object.keys options
 		
 		@_post '/api/block', options, params, (error, res) ->
-		
 			return callback error if error?
 			
-			callback()
+			callback.apply res
 
 	Reddit::compose = (
 		captchaResponse
@@ -24,7 +21,6 @@ module.exports = (Reddit) ->
 		modhash
 		callback
 	) ->
-		
 		options =
 			captcha: captchaResponse
 			iden: captchaId
@@ -36,13 +32,11 @@ module.exports = (Reddit) ->
 		params = Object.keys options
 		
 		@_post '/api/block', options, params, (error, res) ->
-		
 			return callback error if error?
 			
-			callback()
+			callback.apply res
 
 	Reddit::readMessage = (thingId, modhash) ->
-		
 		options =
 			id: thingId
 			uh: modhash
@@ -50,13 +44,11 @@ module.exports = (Reddit) ->
 		params = Object.keys options
 		
 		@_post '/api/read_message', options, params, (error, res) ->
-		
 			return callback error if error?
 			
-			callback()
+			callback.apply res
 
 	Reddit::unreadMessage = (thingId, modhash) ->
-		
 		options =
 			id: thingId
 			uh: modhash
@@ -64,28 +56,22 @@ module.exports = (Reddit) ->
 		params = Object.keys options
 		
 		@_post '/api/unread_message', options, params, (error, res) ->
-		
 			return callback error if error?
 			
-			callback()
+			callback.apply res
 
 	Reddit::messages = (type, options, callback) ->
-		
 		if typeof type is 'function'
-			
 			callback = type
 			options = {}
 			type = 'inbox'
 			
 		if typeof options is 'function'
-			
 			callback = options
 			options = {}
 		
 		@_get "/message/#{type}.json", options, (error, res) ->
-			
 			return callback error if error?
 			
 			callback.apply res, [null, res.body.data?.children]
-				
  
