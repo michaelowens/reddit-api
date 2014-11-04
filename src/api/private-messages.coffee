@@ -36,7 +36,7 @@ module.exports = (Reddit) ->
 			
 			callback.apply res
 
-	Reddit::readMessage = (thingId, modhash) ->
+	Reddit::readMessage = (thingId, modhash, callback) ->
 		options =
 			id: thingId
 			uh: modhash
@@ -48,7 +48,7 @@ module.exports = (Reddit) ->
 			
 			callback.apply res
 
-	Reddit::unreadMessage = (thingId, modhash) ->
+	Reddit::unreadMessage = (thingId, modhash, callback) ->
 		options =
 			id: thingId
 			uh: modhash

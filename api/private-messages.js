@@ -32,7 +32,7 @@
         return callback.apply(res);
       });
     };
-    Reddit.prototype.readMessage = function(thingId, modhash) {
+    Reddit.prototype.readMessage = function(thingId, modhash, callback) {
       var options, params;
       options = {
         id: thingId,
@@ -46,7 +46,7 @@
         return callback.apply(res);
       });
     };
-    Reddit.prototype.unreadMessage = function(thingId, modhash) {
+    Reddit.prototype.unreadMessage = function(thingId, modhash, callback) {
       var options, params;
       options = {
         id: thingId,
