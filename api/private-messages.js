@@ -1,5 +1,4 @@
 (function() {
-
   module.exports = function(Reddit) {
     Reddit.prototype.block = function(thingId, modhash, callback) {
       var options, params;
