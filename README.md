@@ -8,7 +8,7 @@ Please note, this is not finished. ~~I will be developing it as I go~~ _He didn'
 
 # Example
 
-Please don't mind the coffeescript example for the time being. ~~Again, this is a work in prorgess. :)~~ This is a work not in progress.
+Please don't mind the coffeescript example for the time being. ~~Again, this is a work in prorgess. :)~~ This is not a work in progress.
 
 You would launch this like:
 `user=foo password=bar coffee test.coffee`
