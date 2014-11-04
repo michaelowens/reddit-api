@@ -86,6 +86,6 @@ module.exports = (Reddit) ->
 			
 			return callback error if error?
 			
-			callback null, res.body.data?.children
+			callback.apply res, [null, res.body.data?.children]
 				
  

@@ -75,7 +75,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback(null, (_ref = res.body.data) != null ? _ref.children : void 0);
+        return callback.apply(res, [null, (_ref = res.body.data) != null ? _ref.children : void 0]);
       });
     };
   };
