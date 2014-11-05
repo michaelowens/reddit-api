@@ -113,14 +113,7 @@ superagent = <span class="hljs-built_in">require</span> <span class="hljs-string
 url = <span class="hljs-built_in">require</span> <span class="hljs-string">'url'</span>
 util = <span class="hljs-built_in">require</span> <span class="hljs-string">'util'</span>
 
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Reddit</span></span>
-    <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@_userAgent</span>)</span> -&gt;</span>
-        <span class="hljs-keyword">unless</span> <span class="hljs-property">@_userAgent</span>?
-            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"You must specify a User Agent. See https://github.com/reddit/reddit/wiki/API for official API guidelines."</span>
-
-        events.EventEmitter.call <span class="hljs-keyword">this</span>
-
-        <span class="hljs-property">@_agent</span> = superagent.agent()</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Reddit</span></span></pre></div></div>
             
         </li>
         
@@ -133,12 +126,23 @@ util = <span class="hljs-built_in">require</span> <span class="hljs-string">'uti
               </div>
               
 <p>
-Hax :/ Reddit should set its cookie on .reddit.com
+Initializes the Reddit class
+</p>
+<p>
+<div class="doc-tag"><b>param</b> <code>_userAgent</code> <i>String</i> User Agent to be used for HTTP calls</div>
 </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-property">@_agent</span>.attachCookies = <span class="hljs-function"><span class="hljs-params">(req)</span> -&gt;</span>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@_userAgent</span>)</span> -&gt;</span>
+        <span class="hljs-keyword">unless</span> <span class="hljs-property">@_userAgent</span>?
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"You must specify a User Agent. See https://github.com/reddit/reddit/wiki/API for official API guidelines."</span>
+
+        events.EventEmitter.call <span class="hljs-keyword">this</span>
+
+        <span class="hljs-property">@_agent</span> = superagent.agent()
+
+        <span class="hljs-property">@_agent</span>.attachCookies = <span class="hljs-function"><span class="hljs-params">(req)</span> -&gt;</span>
             req.cookies = <span class="hljs-property">@jar</span>.getCookies(
                 CookieAccess <span class="hljs-string">'reddit.com'</span>, <span class="hljs-string">'/'</span>, <span class="hljs-literal">true</span>
             ).toValueString()
@@ -152,9 +156,28 @@ Hax :/ Reddit should set its cookie on .reddit.com
 
         <span class="hljs-property">@_logging</span> = <span class="hljs-literal">false</span>
 
-    util.inherits Reddit, events.EventEmitter
+    util.inherits Reddit, events.EventEmitter</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              
+<p>
+Set the dispatch mode
+</p>
+<p>
+<div class="doc-tag"><b>param</b> <code>dispatchMode</code> <i>String</i> limited / defered / immediate (default: immediate)</div>
+</p>
 
-    <span class="hljs-attribute">setDispatchMode</span>: <span class="hljs-function"><span class="hljs-params">(dispatchMode)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">setDispatchMode</span>: <span class="hljs-function"><span class="hljs-params">(dispatchMode)</span> -&gt;</span>
         <span class="hljs-property">@_dispatchMode</span> = <span class="hljs-keyword">switch</span> dispatchMode
             <span class="hljs-keyword">when</span> <span class="hljs-string">'limited'</span>
                 <span class="hljs-property">@_startDispatching</span>()
@@ -168,13 +191,64 @@ Hax :/ Reddit should set its cookie on .reddit.com
                 <span class="hljs-property">@_stopDispatching</span>()
                 <span class="hljs-string">'immediate'</span>
 
-        <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Set dispatch mode to <span class="hljs-subst">#{<span class="hljs-property">@_dispatchMode</span>}</span>"</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()
+        <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Set dispatch mode to <span class="hljs-subst">#{<span class="hljs-property">@_dispatchMode</span>}</span>"</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              
+<p>
+Gets the dispatch mode
+</p>
+<p>
+<div class="doc-tag"><b>return</b> <i>String</i> dispatch mode (see setDispatchMode)</div>
+</p>
 
-    <span class="hljs-attribute">dispatchMode</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_dispatchMode</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">dispatchMode</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_dispatchMode</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              
+<p>
+Dispatch all queued operations
+</p>
 
-    <span class="hljs-attribute">burst</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_dispatch</span>() <span class="hljs-keyword">while</span> <span class="hljs-property">@_queue</span>.length &gt; <span class="hljs-number">0</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">burst</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_dispatch</span>() <span class="hljs-keyword">while</span> <span class="hljs-property">@_queue</span>.length &gt; <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              
+<p>
+Dispatches the first item of the queue
+</p>
 
-    <span class="hljs-attribute">_dispatch</span>: <span class="hljs-function">-&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_dispatch</span>: <span class="hljs-function">-&gt;</span>
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_queue</span>.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
 
         dispatching = <span class="hljs-property">@_queue</span>.shift()
@@ -184,9 +258,25 @@ Hax :/ Reddit should set its cookie on .reddit.com
 
         dispatching.callback =&gt;
             <span class="hljs-property">@_queueCount</span> -= <span class="hljs-number">1</span>
-            <span class="hljs-property">@emit</span> <span class="hljs-string">'drain'</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_queueCount</span> <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+            <span class="hljs-property">@emit</span> <span class="hljs-string">'drain'</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_queueCount</span> <span class="hljs-keyword">is</span> <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              
+<p>
+Dispatch or queue an operation
+</p>
 
-    <span class="hljs-attribute">_enqueue</span>: <span class="hljs-function"><span class="hljs-params">(details, callback)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_enqueue</span>: <span class="hljs-function"><span class="hljs-params">(details, callback)</span> -&gt;</span>
         <span class="hljs-keyword">switch</span> <span class="hljs-property">@dispatchMode</span>()
             <span class="hljs-keyword">when</span> <span class="hljs-string">'immediate'</span>
                 <span class="hljs-built_in">console</span>.log <span class="hljs-string">'Dispatching:'</span>, details <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()
@@ -195,9 +285,25 @@ Hax :/ Reddit should set its cookie on .reddit.com
             <span class="hljs-keyword">when</span> <span class="hljs-string">'deferred'</span>, <span class="hljs-string">'limited'</span>
                 <span class="hljs-built_in">console</span>.log <span class="hljs-string">'Enqueueing:'</span>, details <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()
                 <span class="hljs-property">@_queue</span>.push <span class="hljs-attribute">details</span>: details, <span class="hljs-attribute">callback</span>: callback
-                <span class="hljs-property">@_queueCount</span> += <span class="hljs-number">1</span>
+                <span class="hljs-property">@_queueCount</span> += <span class="hljs-number">1</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              
+<p>
+Start the limiter interval
+</p>
 
-    <span class="hljs-attribute">_startDispatching</span>: <span class="hljs-function">-&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_startDispatching</span>: <span class="hljs-function">-&gt;</span>
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_limiterInterval</span>?
 
         <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Dispatching started"</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()
@@ -205,28 +311,82 @@ Hax :/ Reddit should set its cookie on .reddit.com
         <span class="hljs-property">@_limiterInterval</span> = setInterval(
             <span class="hljs-property">@_dispatch</span>.bind <span class="hljs-keyword">this</span>
             <span class="hljs-property">@_limiterFrequency</span>
-        )
+        )</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              
+<p>
+Stop the limiter interval
+</p>
 
-    <span class="hljs-attribute">_stopDispatching</span>: <span class="hljs-function">-&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_stopDispatching</span>: <span class="hljs-function">-&gt;</span>
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@_limiterInterval</span>?
 
         <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Dispatching stopped"</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@isLogging</span>()
 
         clearInterval <span class="hljs-property">@_limiterInterval</span>
-        <span class="hljs-property">@_limiterInterval</span> = <span class="hljs-literal">null</span>
-
-    <span class="hljs-attribute">setLimiterFrequency</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@_limiterFrequency</span>)</span> -&gt;</span>
-
-    <span class="hljs-attribute">limiterFrequency</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_limiterFrequency</span></pre></div></div>
+        <span class="hljs-property">@_limiterInterval</span> = <span class="hljs-literal">null</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-3">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              
+<p>
+Define how many milliseconds should be between operations when dispatch mode is limited
+</p>
+<p>
+<div class="doc-tag"><b>param</b> <code>_limiterFrequency</code> <i>Number</i> The amount of milliseconds</div>
+</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">setLimiterFrequency</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@_limiterFrequency</span>)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              
+<p>
+Gets the limiter frequency
+</p>
+<p>
+<div class="doc-tag"><b>return</b> <i>Number</i> limiter frequency (see setLimiterFrequency)</div>
+</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">limiterFrequency</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_limiterFrequency</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               
 <p>
@@ -239,11 +399,64 @@ Enable or disable logs
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">setIsLogging</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@_logging</span>)</span> -&gt;</span>
-        <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Logging turned <span class="hljs-subst">#{<span class="hljs-keyword">if</span> <span class="hljs-property">@_logging</span> <span class="hljs-keyword">then</span> <span class="hljs-string">'on'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'off'</span>}</span>"</span>
+        <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Logging turned <span class="hljs-subst">#{<span class="hljs-keyword">if</span> <span class="hljs-property">@_logging</span> <span class="hljs-keyword">then</span> <span class="hljs-string">'on'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'off'</span>}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              
+<p>
+Gets the logging state
+</p>
+<p>
+<div class="doc-tag"><b>return</b> <i>Number</i> If logging is enabled</div>
+</p>
 
-    <span class="hljs-attribute">isLogging</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_logging</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">isLogging</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_logging</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              
+<p>
+Send a POST request to Reddit
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, options, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>options</code> <i>Object</i> An object of options</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, options, params, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>options</code> <i>Object</i> An object of options</div>
+  <div class="doc-tag"><b>param</b> <code>params</code> <i>Array</i> An array of url parameters</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
 
-    <span class="hljs-attribute">_post</span>: <span class="hljs-function"><span class="hljs-params">(pathname, options, params, callback)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_post</span>: <span class="hljs-function"><span class="hljs-params">(pathname, options, params, callback)</span> -&gt;</span>
         options ?= {}
 
         <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> params <span class="hljs-keyword">is</span> <span class="hljs-string">'function'</span>
@@ -280,9 +493,43 @@ Enable or disable logs
                     <span class="hljs-keyword">else</span>
                         callback <span class="hljs-keyword">new</span> Error JSON.stringify details
 
-                    finished()
+                    finished()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              
+<p>
+Send a GET request to Reddit
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, options, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>options</code> <i>Object</i> An object of options</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
+<p>
+<div class="doc-tag"><b>overload</b> _post(pathname, options, params, callback)</div>
+  <div class="doc-tag"><b>param</b> <code>pathname</code> <i>String</i> The API call path</div>
+  <div class="doc-tag"><b>param</b> <code>options</code> <i>Object</i> An object of options</div>
+  <div class="doc-tag"><b>param</b> <code>params</code> <i>Array</i> An array of url parameters</div>
+  <div class="doc-tag"><b>param</b> <code>callback</code> <i>Function</i> The callback function</div>
+</p>
 
-    <span class="hljs-attribute">_get</span>: <span class="hljs-function"><span class="hljs-params">(pathname, options, params, callback)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_get</span>: <span class="hljs-function"><span class="hljs-params">(pathname, options, params, callback)</span> -&gt;</span>
         options ?= {}
 
         <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> params <span class="hljs-keyword">is</span> <span class="hljs-string">'function'</span>
@@ -318,9 +565,29 @@ Enable or disable logs
                     <span class="hljs-keyword">else</span>
                         callback <span class="hljs-keyword">new</span> Error JSON.stringify details
 
-                    finished()
+                    finished()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              
+<p>
+An internal function to check options and parameters for _post and _get
+</p>
+<p>
+<div class="doc-tag"><b>param</b> <code>options</code> <i>Object</i> An object of options</div>
+<div class="doc-tag"><b>param</b> <code>params</code> <i>Array</i> An array of url parameters</div>
+</p>
 
-    <span class="hljs-attribute">_checkParams</span>: <span class="hljs-function"><span class="hljs-params">(options, params)</span> -&gt;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">_checkParams</span>: <span class="hljs-function"><span class="hljs-params">(options, params)</span> -&gt;</span>
         missing = []
         <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> params
             missing.push param <span class="hljs-keyword">unless</span> options[param]?
@@ -331,11 +598,11 @@ Enable or disable logs
         </li>
         
         
-        <li id="section-4">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               
 <p>
