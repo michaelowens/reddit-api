@@ -17,6 +17,6 @@
     "docco": "^0.6.3",
     "grunt": "^0.4.5",
     "grunt-contrib-coffee": "^0.12.0",
-    "sweeten-docco": "qualiabyte/sweeten-docco"
+    "sweeten-docco": "^0.3.3"
   }
 }
