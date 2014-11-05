@@ -96,6 +96,9 @@ module.exports = class Reddit
 
     limiterFrequency: -> @_limiterFrequency
 
+    # Enable or disable logs
+    #
+    # @param _logging [Boolean] If logging is enabled?
     setIsLogging: (@_logging) ->
         console.log "Logging turned #{if @_logging then 'on' else 'off'}"
 
