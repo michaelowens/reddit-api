@@ -106,149 +106,119 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(Reddit)</span> -&gt;</span>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(Reddit)</span> -&gt;</span>
+    <span class="hljs-attribute">Reddit</span>::clearSessions = <span class="hljs-function"><span class="hljs-params">(modhash, password, url, callback)</span> -&gt;</span>
+        options =
+            <span class="hljs-attribute">curpass</span>: password
+            <span class="hljs-attribute">dest</span>: url
+            <span class="hljs-attribute">uh</span>: modhash
 
-	<span class="hljs-attribute">Reddit</span>::clearSessions = <span class="hljs-function"><span class="hljs-params">(modhash, password, url, callback)</span> -&gt;</span>
-		
-		options =
-			<span class="hljs-attribute">curpass</span>: password
-			<span class="hljs-attribute">dest</span>: url
-			<span class="hljs-attribute">uh</span>: modhash
-		
-		params = Object.keys options
-		
-		<span class="hljs-property">@_post</span> <span class="hljs-string">'/api/clear_sessions'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
-			
-			<span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
-			
-			callback()
-				
-	<span class="hljs-attribute">Reddit</span>::deleteUser = <span class="hljs-function"><span class="hljs-params">(username, password, modhash, callback)</span> -&gt;</span>
-		
-		options =
-			<span class="hljs-attribute">confirm</span>: <span class="hljs-literal">true</span>
-			<span class="hljs-attribute">passwd</span>: password
-			<span class="hljs-attribute">uh</span>: modhash
-			<span class="hljs-attribute">user</span>: username
-		
-		params = Object.keys options
-		
-		<span class="hljs-property">@_post</span> <span class="hljs-string">'/api/delete_user'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
-			
-			<span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
-			
-			callback()
-				
-	<span class="hljs-attribute">Reddit</span>::login = <span class="hljs-function"><span class="hljs-params">(username, password, callback)</span> -&gt;</span>
-		
-		params = [<span class="hljs-string">'user'</span>, <span class="hljs-string">'passwd'</span>]
-		
-		options =
-			<span class="hljs-attribute">api_type</span>: <span class="hljs-string">'json'</span>
-			<span class="hljs-attribute">user</span>: username
-			<span class="hljs-attribute">passwd</span>: password
-			<span class="hljs-attribute">rem</span>: <span class="hljs-literal">false</span>
-		
-		<span class="hljs-property">@_post</span> <span class="hljs-string">'/api/login'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
-			
-			<span class="hljs-property">@_agent</span>.jar.setCookies([
-				<span class="hljs-string">"reddit_session=<span class="hljs-subst">#{res.body?.json?.data?.cookie}</span>; Domain=reddit.com; Path=/; HttpOnly"</span>
-			])
-			
-			<span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
-		
-			callback <span class="hljs-literal">null</span>, res.body.json?.data?.modhash
-	
-	<span class="hljs-attribute">Reddit</span>::oAuthAuthorize = <span class="hljs-function"><span class="hljs-params">(clientId, clientSecret, state, code, scope = [<span class="hljs-string">'identity'</span>], callback)</span> -&gt;</span>
-		
-		<span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> scope <span class="hljs-keyword">is</span> <span class="hljs-string">'function'</span>
-			
-			callback = scope
-			scope = [<span class="hljs-string">'identity'</span>]
-	
-		options =
-			<span class="hljs-attribute">state</span>: state
-			<span class="hljs-attribute">scope</span>: scope.join <span class="hljs-string">','</span>
-			<span class="hljs-attribute">client_id</span>: <span class="hljs-string">'tMsPeTkhps5_tg'</span>
-			<span class="hljs-attribute">redirect_uri</span>: <span class="hljs-string">'http://reddichat.com/reddit/oauth'</span>
-			<span class="hljs-attribute">code</span>: code
-			<span class="hljs-attribute">grant_type</span>: <span class="hljs-string">'authorization_code'</span>
-		
-		details =
-			<span class="hljs-attribute">name</span>: <span class="hljs-string">"reddit OAuth authorization"</span>
-			<span class="hljs-attribute">options</span>: options
-		
-		<span class="hljs-property">@_enqueue</span> details, <span class="hljs-function"><span class="hljs-params">(finished)</span> =&gt;</span>
-			
-			<span class="hljs-property">@_agent</span>
-				.post(<span class="hljs-string">"https://<span class="hljs-subst">#{clientId}</span>:<span class="hljs-subst">#{clientSecret}</span>@ssl.reddit.com/api/v1/access_token"</span>)
-				.set(<span class="hljs-string">'Content-Type'</span>, <span class="hljs-string">'application/x-www-form-urlencoded'</span>)
-				.set(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-property">@_userAgent</span>)
-				.send(options)
-				.end (res) -&gt;
-					
-					<span class="hljs-keyword">if</span> res.status <span class="hljs-keyword">is</span> <span class="hljs-number">200</span>
-						
-						callback <span class="hljs-literal">null</span>, res.body
-						
-					<span class="hljs-keyword">else</span>
-						
-						callback <span class="hljs-keyword">new</span> Error JSON.stringify details
-						
-					
-					finished() 
-		
-	<span class="hljs-attribute">Reddit</span>::oAuthMe = <span class="hljs-function"><span class="hljs-params">(token, callback)</span> -&gt;</span>
-		
-		details =
-			<span class="hljs-attribute">name</span>: <span class="hljs-string">"reddit OAuth Me"</span>
-			<span class="hljs-attribute">options</span>:
-				<span class="hljs-attribute">token</span>: token
-		
-		<span class="hljs-property">@_enqueue</span> details, <span class="hljs-function"><span class="hljs-params">(finished)</span> =&gt;</span>
-			
-			<span class="hljs-property">@_agent</span>
-				.get(<span class="hljs-string">'https://oauth.reddit.com/api/v1/me'</span>)
-				.set(<span class="hljs-string">'Authorization'</span>, <span class="hljs-string">"bearer <span class="hljs-subst">#{token}</span>"</span>)
-				.set(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-property">@_userAgent</span>)
-				.end (res) -&gt;
-					
-					<span class="hljs-keyword">if</span> res.status <span class="hljs-keyword">is</span> <span class="hljs-number">200</span>
-						
-						callback <span class="hljs-literal">null</span>, res.body
-						
-					<span class="hljs-keyword">else</span>
-						
-						callback <span class="hljs-keyword">new</span> Error JSON.stringify details
-						
-					finished() 
-					
-	<span class="hljs-attribute">Reddit</span>::me = <span class="hljs-function"><span class="hljs-params">(callback)</span> -&gt;</span>
-				
-		<span class="hljs-property">@_get</span> <span class="hljs-string">'/api/me.json'</span>, <span class="hljs-function"><span class="hljs-params">(error, res)</span> -&gt;</span>
-		
-			<span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
-			
-			callback <span class="hljs-literal">null</span>, res.body.data
+        params = Object.keys options
 
-	<span class="hljs-attribute">Reddit</span>::update = <span class="hljs-function"><span class="hljs-params">(password, email, newPassword, modhash, callback)</span> -&gt;</span>
-		
-		options =
-			<span class="hljs-attribute">curpass</span>: password
-			<span class="hljs-attribute">email</span>: email
-			<span class="hljs-attribute">newpass</span>: newPassword
-			<span class="hljs-attribute">uh</span>: modhash
-			<span class="hljs-attribute">verify</span>: <span class="hljs-literal">true</span>
-			<span class="hljs-attribute">verpass</span>: newPassword
-		
-		params = Object.keys options
-		
-		<span class="hljs-property">@_post</span> <span class="hljs-string">'/api/update'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> -&gt;</span>
-		
-			<span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
-			
-			callback()</pre></div></div>
+        <span class="hljs-property">@_post</span> <span class="hljs-string">'/api/clear_sessions'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
+            <span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
+            callback()
+
+    <span class="hljs-attribute">Reddit</span>::deleteUser = <span class="hljs-function"><span class="hljs-params">(username, password, modhash, callback)</span> -&gt;</span>
+        options =
+            <span class="hljs-attribute">confirm</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">passwd</span>: password
+            <span class="hljs-attribute">uh</span>: modhash
+            <span class="hljs-attribute">user</span>: username
+
+        params = Object.keys options
+
+        <span class="hljs-property">@_post</span> <span class="hljs-string">'/api/delete_user'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
+            <span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
+            callback()
+
+    <span class="hljs-attribute">Reddit</span>::login = <span class="hljs-function"><span class="hljs-params">(username, password, callback)</span> -&gt;</span>
+        params = [<span class="hljs-string">'user'</span>, <span class="hljs-string">'passwd'</span>]
+
+        options =
+            <span class="hljs-attribute">api_type</span>: <span class="hljs-string">'json'</span>
+            <span class="hljs-attribute">user</span>: username
+            <span class="hljs-attribute">passwd</span>: password
+            <span class="hljs-attribute">rem</span>: <span class="hljs-literal">false</span>
+
+        <span class="hljs-property">@_post</span> <span class="hljs-string">'/api/login'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> =&gt;</span>
+            <span class="hljs-property">@_agent</span>.jar.setCookies([
+                <span class="hljs-string">"reddit_session=<span class="hljs-subst">#{res.body?.json?.data?.cookie}</span>; Domain=reddit.com; Path=/; HttpOnly"</span>
+            ])
+
+            <span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
+
+            callback <span class="hljs-literal">null</span>, res.body.json?.data?.modhash
+
+    <span class="hljs-attribute">Reddit</span>::oAuthAuthorize = <span class="hljs-function"><span class="hljs-params">(clientId, clientSecret, state, code, scope = [<span class="hljs-string">'identity'</span>], callback)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">typeof</span> scope <span class="hljs-keyword">is</span> <span class="hljs-string">'function'</span>
+            callback = scope
+            scope = [<span class="hljs-string">'identity'</span>]
+
+        options =
+            <span class="hljs-attribute">state</span>: state
+            <span class="hljs-attribute">scope</span>: scope.join <span class="hljs-string">','</span>
+            <span class="hljs-attribute">client_id</span>: <span class="hljs-string">'tMsPeTkhps5_tg'</span>
+            <span class="hljs-attribute">redirect_uri</span>: <span class="hljs-string">'http://reddichat.com/reddit/oauth'</span>
+            <span class="hljs-attribute">code</span>: code
+            <span class="hljs-attribute">grant_type</span>: <span class="hljs-string">'authorization_code'</span>
+
+        details =
+            <span class="hljs-attribute">name</span>: <span class="hljs-string">"reddit OAuth authorization"</span>
+            <span class="hljs-attribute">options</span>: options
+
+        <span class="hljs-property">@_enqueue</span> details, <span class="hljs-function"><span class="hljs-params">(finished)</span> =&gt;</span>
+            <span class="hljs-property">@_agent</span>
+                .post(<span class="hljs-string">"https://<span class="hljs-subst">#{clientId}</span>:<span class="hljs-subst">#{clientSecret}</span>@ssl.reddit.com/api/v1/access_token"</span>)
+                .set(<span class="hljs-string">'Content-Type'</span>, <span class="hljs-string">'application/x-www-form-urlencoded'</span>)
+                .set(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-property">@_userAgent</span>)
+                .send(options)
+                .end (res) -&gt;
+                    <span class="hljs-keyword">if</span> res.status <span class="hljs-keyword">is</span> <span class="hljs-number">200</span>
+                        callback <span class="hljs-literal">null</span>, res.body
+                    <span class="hljs-keyword">else</span>
+                        callback <span class="hljs-keyword">new</span> Error JSON.stringify details
+
+                    finished()
+
+    <span class="hljs-attribute">Reddit</span>::oAuthMe = <span class="hljs-function"><span class="hljs-params">(token, callback)</span> -&gt;</span>
+        details =
+            <span class="hljs-attribute">name</span>: <span class="hljs-string">"reddit OAuth Me"</span>
+            <span class="hljs-attribute">options</span>:
+                <span class="hljs-attribute">token</span>: token
+
+        <span class="hljs-property">@_enqueue</span> details, <span class="hljs-function"><span class="hljs-params">(finished)</span> =&gt;</span>
+            <span class="hljs-property">@_agent</span>
+                .get(<span class="hljs-string">'https://oauth.reddit.com/api/v1/me'</span>)
+                .set(<span class="hljs-string">'Authorization'</span>, <span class="hljs-string">"bearer <span class="hljs-subst">#{token}</span>"</span>)
+                .set(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-property">@_userAgent</span>)
+                .end (res) -&gt;
+                    <span class="hljs-keyword">if</span> res.status <span class="hljs-keyword">is</span> <span class="hljs-number">200</span>
+                        callback <span class="hljs-literal">null</span>, res.body
+                    <span class="hljs-keyword">else</span>
+                        callback <span class="hljs-keyword">new</span> Error JSON.stringify details
+
+                    finished()
+
+    <span class="hljs-attribute">Reddit</span>::me = <span class="hljs-function"><span class="hljs-params">(callback)</span> -&gt;</span>
+        <span class="hljs-property">@_get</span> <span class="hljs-string">'/api/me.json'</span>, <span class="hljs-function"><span class="hljs-params">(error, res)</span> -&gt;</span>
+            <span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
+            callback <span class="hljs-literal">null</span>, res.body.data
+
+    <span class="hljs-attribute">Reddit</span>::update = <span class="hljs-function"><span class="hljs-params">(password, email, newPassword, modhash, callback)</span> -&gt;</span>
+        options =
+            <span class="hljs-attribute">curpass</span>: password
+            <span class="hljs-attribute">email</span>: email
+            <span class="hljs-attribute">newpass</span>: newPassword
+            <span class="hljs-attribute">uh</span>: modhash
+            <span class="hljs-attribute">verify</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">verpass</span>: newPassword
+
+        params = Object.keys options
+
+        <span class="hljs-property">@_post</span> <span class="hljs-string">'/api/update'</span>, options, params, <span class="hljs-function"><span class="hljs-params">(error, res)</span> -&gt;</span>
+            <span class="hljs-keyword">return</span> callback error <span class="hljs-keyword">if</span> error?
+            callback()</pre></div></div>
             
         </li>
         
