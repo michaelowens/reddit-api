@@ -4,16 +4,18 @@
   "description": "Wrapper class for the Reddit API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "git checkout master && docco --output tmpdocs src/**/*.coffee && git checkout gh-pages && mv tmpdocs/* ."
   },
   "repository": "git://github.com/cha0s/reddit-api.git",
   "author": "cha0s",
   "license": "BSD",
   "dependencies": {
-    "superagent": "~0.12.4"
+    "superagent": "^0.12.4"
   },
   "devDependencies": {
-    "grunt-contrib-coffee": "~0.6.0",
-    "grunt": "~0.4.0"
+    "docco": "^0.6.3",
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.12.0"
   }
 }
