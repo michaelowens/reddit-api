@@ -6,6 +6,9 @@ url = require 'url'
 util = require 'util'
 
 module.exports = class Reddit
+    # Initializes the Reddit class
+    #
+    # @param _userAgent [String] User Agent to be used for HTTP calls
     constructor: (@_userAgent) ->
         unless @_userAgent?
             throw new Error "You must specify a User Agent. See https://github.com/reddit/reddit/wiki/API for official API guidelines."
@@ -14,7 +17,6 @@ module.exports = class Reddit
 
         @_agent = superagent.agent()
 
-        # Hax :/ Reddit should set its cookie on .reddit.com
         @_agent.attachCookies = (req) ->
             req.cookies = @jar.getCookies(
                 CookieAccess 'reddit.com', '/', true
@@ -31,6 +33,9 @@ module.exports = class Reddit
 
     util.inherits Reddit, events.EventEmitter
 
+    # Set the dispatch mode
+    #
+    # @param dispatchMode [String] limited / defered / immediate (default: immediate)
     setDispatchMode: (dispatchMode) ->
         @_dispatchMode = switch dispatchMode
             when 'limited'
@@ -47,10 +52,15 @@ module.exports = class Reddit
 
         console.log "Set dispatch mode to #{@_dispatchMode}" if @isLogging()
 
+    # Gets the dispatch mode
+    #
+    # @return [String] dispatch mode (see setDispatchMode)
     dispatchMode: -> @_dispatchMode
 
+    # Dispatch all queued operations
     burst: -> @_dispatch() while @_queue.length > 0
 
+    # Dispatches the first item of the queue
     _dispatch: ->
         return if @_queue.length is 0
 
@@ -63,6 +73,7 @@ module.exports = class Reddit
             @_queueCount -= 1
             @emit 'drain' if @_queueCount is 0
 
+    # Dispatch or queue an operation
     _enqueue: (details, callback) ->
         switch @dispatchMode()
             when 'immediate'
@@ -74,6 +85,7 @@ module.exports = class Reddit
                 @_queue.push details: details, callback: callback
                 @_queueCount += 1
 
+    # Start the limiter interval
     _startDispatching: ->
         return if @_limiterInterval?
 
@@ -84,6 +96,7 @@ module.exports = class Reddit
             @_limiterFrequency
         )
 
+    # Stop the limiter interval
     _stopDispatching: ->
         return unless @_limiterInterval?
 
@@ -92,8 +105,14 @@ module.exports = class Reddit
         clearInterval @_limiterInterval
         @_limiterInterval = null
 
+    # Define how many milliseconds should be between operations when dispatch mode is limited
+    #
+    # @param _limiterFrequency [Number] The amount of milliseconds
     setLimiterFrequency: (@_limiterFrequency) ->
 
+    # Gets the limiter frequency
+    #
+    # @return [Number] limiter frequency (see setLimiterFrequency)
     limiterFrequency: -> @_limiterFrequency
 
     # Enable or disable logs
@@ -102,8 +121,27 @@ module.exports = class Reddit
     setIsLogging: (@_logging) ->
         console.log "Logging turned #{if @_logging then 'on' else 'off'}"
 
+    # Gets the logging state
+    #
+    # @return [Number] If logging is enabled
     isLogging: -> @_logging
 
+    # Send a POST request to Reddit
+    #
+    # @overload _post(pathname, callback)
+    #   @param pathname [String] The API call path
+    #   @param callback [Function] The callback function
+    #
+    # @overload _post(pathname, options, callback)
+    #   @param pathname [String] The API call path
+    #   @param options [Object] An object of options
+    #   @param callback [Function] The callback function
+    #
+    # @overload _post(pathname, options, params, callback)
+    #   @param pathname [String] The API call path
+    #   @param options [Object] An object of options
+    #   @param params [Array] An array of url parameters
+    #   @param callback [Function] The callback function
     _post: (pathname, options, params, callback) ->
         options ?= {}
 
@@ -143,6 +181,22 @@ module.exports = class Reddit
 
                     finished()
 
+    # Send a GET request to Reddit
+    #
+    # @overload _post(pathname, callback)
+    #   @param pathname [String] The API call path
+    #   @param callback [Function] The callback function
+    #
+    # @overload _post(pathname, options, callback)
+    #   @param pathname [String] The API call path
+    #   @param options [Object] An object of options
+    #   @param callback [Function] The callback function
+    #
+    # @overload _post(pathname, options, params, callback)
+    #   @param pathname [String] The API call path
+    #   @param options [Object] An object of options
+    #   @param params [Array] An array of url parameters
+    #   @param callback [Function] The callback function
     _get: (pathname, options, params, callback) ->
         options ?= {}
 
@@ -181,6 +235,10 @@ module.exports = class Reddit
 
                     finished()
 
+    # An internal function to check options and parameters for _post and _get
+    #
+    # @param options [Object] An object of options
+    # @param params [Array] An array of url parameters
     _checkParams: (options, params) ->
         missing = []
         for param in params
