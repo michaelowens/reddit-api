@@ -504,3 +504,5 @@ pre .hljs-chunk {
 pre .hljs-tex .hljs-formula {
   opacity: 0.5;
 }
+.doc-tag { color: #777; }
+.doc-tag * { color: #222; }
