@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "git checkout master && docco --output tmpdocs src/**/*.coffee && git checkout gh-pages && mv tmpdocs/* ."
+    "docs": "git checkout master && docco --output tmpdocs src/**/*.coffee && git checkout gh-pages && git rm -rf . && mv tmpdocs/* ."
   },
   "repository": "git://github.com/cha0s/reddit-api.git",
   "author": "cha0s",
