@@ -1,4 +1,4 @@
-module.exports = (Reddit) ->
+module.exports = PrivateMessages = (Reddit) ->
     Reddit::block = (thingId, modhash, callback) ->
         options =
             id: thingId
