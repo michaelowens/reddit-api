@@ -123,7 +123,7 @@ module.exports = class Reddit
 
     # Gets the logging state
     #
-    # @return [Number] If logging is enabled
+    # @return [Boolean] If logging is enabled
     isLogging: -> @_logging
 
     # Send a POST request to Reddit

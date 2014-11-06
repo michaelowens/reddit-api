@@ -33,6 +33,11 @@ module.exports = (Reddit) ->
             return callback error if error?
             callback.apply res
 
+    # Mark a private message as read
+    #
+    # @param thingId [String] The message ID
+    # @param modhash [String] The modhash given by Reddit
+    # @param callback [Function] The callback
     Reddit::readMessage = (thingId, modhash, callback) ->
         options =
             id: thingId
