@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "git checkout master && find src/ -name '*.coffee' -exec docco {} + && node_modules/sweeten-docco/sweeten-docco && git checkout gh-pages && git rm -rf . && mv docs/* . && rm -rf docs"
+    "docs": "git checkout master && codo src/ && git checkout gh-pages && git rm -rf . && mv doc/* . && rm -rf doc"
   },
   "repository": "git://github.com/cha0s/reddit-api.git",
   "author": "cha0s",
@@ -14,9 +14,8 @@
     "superagent": "^0.12.4"
   },
   "devDependencies": {
-    "docco": "^0.6.3",
+    "codo": "^2.0.9",
     "grunt": "^0.4.5",
-    "grunt-contrib-coffee": "^0.12.0",
-    "sweeten-docco": "^0.3.3"
+    "grunt-contrib-coffee": "^0.12.0"
   }
 }
