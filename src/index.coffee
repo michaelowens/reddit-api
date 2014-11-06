@@ -183,16 +183,16 @@ module.exports = class Reddit
 
     # Send a GET request to Reddit
     #
-    # @overload _post(pathname, callback)
+    # @overload _get(pathname, callback)
     #   @param pathname [String] The API call path
     #   @param callback [Function] The callback function
     #
-    # @overload _post(pathname, options, callback)
+    # @overload _get(pathname, options, callback)
     #   @param pathname [String] The API call path
     #   @param options [Object] An object of options
     #   @param callback [Function] The callback function
     #
-    # @overload _post(pathname, options, params, callback)
+    # @overload _get(pathname, options, params, callback)
     #   @param pathname [String] The API call path
     #   @param options [Object] An object of options
     #   @param params [Array] An array of url parameters
