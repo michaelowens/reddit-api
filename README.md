@@ -6,6 +6,10 @@ See [the Reddit API documentation](http://www.reddit.com/dev/api) for details on
 
 Please note, this is not finished. ~~I will be developing it as I go~~ _He didn't_. I am working on my own projects to leverage the reddit API, so I started the effort. Pull requests are very welcome!
 
+# Documentation
+
+[Go to the documentation!](https://michaelowens.github.io/reddit-api/)
+
 # Example
 
 Please don't mind the coffeescript example for the time being. ~~Again, this is a work in prorgess. :)~~ This is not a work in progress.
@@ -23,7 +27,7 @@ reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 # Enable logging.
 reddit.setIsLogging true
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) ->
 
@@ -31,9 +35,9 @@ reddit.login user, password, (error) ->
 
 	# Check the user's inbox.
 	reddit.messages (error, messages) ->
-		
+
 		throw error if error?
-		
+
 		console.log messages
 
 ```
@@ -48,7 +52,7 @@ reddit = new Reddit 'cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE'
 # Enable logging.
 reddit.setIsLogging true
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) ->
 
@@ -56,12 +60,12 @@ reddit.login user, password, (error) ->
 
 	# Deferred dispatching.
 	reddit.setDispatchMode 'deferred'
-	
+
 	# Check the user's inbox.
 	reddit.messages (error, messages) ->
-		
+
 		throw error if error?
-		
+
 		console.log messages
 
 	console.log 'Chilling for 2 seconds before the burst!'
@@ -85,7 +89,7 @@ reddit.setIsLogging true
 # Rate-limited dispatching.
 reddit.setDispatchMode 'limited'
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) ->
 
@@ -93,9 +97,9 @@ reddit.login user, password, (error) ->
 
 # Check the user's inbox.
 reddit.messages (error, messages) ->
-	
+
 	throw error if error?
-	
+
 	console.log messages
 
 # Notification when all queued operations are complete.
