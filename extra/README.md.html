@@ -34,7 +34,7 @@
         </p>
       </nav>
       <div id='filecontents'>
-        <h1 id="welcome-">Welcome!</h1><p>This is a project to wrap and make the Reddit API easily accessible to your node.js applications.</p><p>See <a href="http://www.reddit.com/dev/api">the Reddit API documentation</a> for details on what to do.</p><p>Please note, this is not finished. <del>I will be developing it as I go</del> <em>He didn&#39;t</em>. I am working on my own projects to leverage the reddit API, so I started the effort. Pull requests are very welcome!</p><h1 id="example">Example</h1><p>Please don&#39;t mind the coffeescript example for the time being. <del>Again, this is a work in prorgess. :)</del> This is not a work in progress.</p><p>You would launch this like:
+        <h1 id="welcome-">Welcome!</h1><p>This is a project to wrap and make the Reddit API easily accessible to your node.js applications.</p><p>See <a href="http://www.reddit.com/dev/api">the Reddit API documentation</a> for details on what to do.</p><p>Please note, this is not finished. <del>I will be developing it as I go</del> <em>He didn&#39;t</em>. I am working on my own projects to leverage the reddit API, so I started the effort. Pull requests are very welcome!</p><h1 id="documentation">Documentation</h1><p><a href="https://michaelowens.github.io/reddit-api/">Go to the documentation!</a></p><h1 id="example">Example</h1><p>Please don&#39;t mind the coffeescript example for the time being. <del>Again, this is a work in prorgess. :)</del> This is not a work in progress.</p><p>You would launch this like:
 <code>user=foo password=bar coffee test.coffee</code></p><h2 id="immediate-mode-default-">Immediate mode (default):</h2>
 <pre><code>Reddit = require &#39;reddit-api&#39;
 
@@ -43,7 +43,7 @@ reddit = new Reddit &#39;cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE&#39;
 # Enable logging.
 reddit.setIsLogging true
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) -&gt;
 
@@ -63,7 +63,7 @@ reddit = new Reddit &#39;cutebot v0.1 by /u/YOUR_REDDIT_USERNAME_HERE&#39;
 # Enable logging.
 reddit.setIsLogging true
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) -&gt;
 
@@ -95,7 +95,7 @@ reddit.setIsLogging true
 # Rate-limited dispatching.
 reddit.setDispatchMode &#39;limited&#39;
 
-# Login operation.  
+# Login operation.
 {user, password} = process.env
 reddit.login user, password, (error) -&gt;
 
@@ -121,7 +121,7 @@ reddit.on &#39;drain&#39;, -&gt;
       </div>
     </div>
     <div id='footer'>
-  November 07, 14 15:30:56 by
+  November 07, 14 15:37:45 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>
