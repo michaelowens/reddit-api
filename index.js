@@ -14,9 +14,8 @@
   util = require('util');
 
   module.exports = Reddit = (function() {
-    var category, _i, _len, _ref;
-
     function Reddit(_userAgent) {
+      var category, _i, _len, _ref;
       this._userAgent = _userAgent;
       if (this._userAgent == null) {
         throw new Error("You must specify a User Agent. See https://github.com/reddit/reddit/wiki/API for official API guidelines.");
@@ -32,6 +31,11 @@
       this._limiterFrequency = 2100;
       this._limiterInterval = null;
       this._logging = false;
+      _ref = ['account', 'apps', 'flair', 'links-and-comments', 'listings', 'private-messages', 'misc', 'moderation', 'search', 'subreddits', 'users', 'wiki'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        category = _ref[_i];
+        require('.' + path.sep + path.join('api', category))(this);
+      }
     }
 
     util.inherits(Reddit, events.EventEmitter);
@@ -69,8 +73,7 @@
     };
 
     Reddit.prototype._dispatch = function() {
-      var dispatching,
-        _this = this;
+      var dispatching;
       if (this._queue.length === 0) {
         return;
       }
@@ -78,12 +81,14 @@
       if (this.isLogging()) {
         console.log('Dispatching:', dispatching);
       }
-      return dispatching.callback(function() {
-        _this._queueCount -= 1;
-        if (_this._queueCount === 0) {
-          return _this.emit('drain');
-        }
-      });
+      return dispatching.callback((function(_this) {
+        return function() {
+          _this._queueCount -= 1;
+          if (_this._queueCount === 0) {
+            return _this.emit('drain');
+          }
+        };
+      })(this));
     };
 
     Reddit.prototype._enqueue = function(details, callback) {
@@ -145,8 +150,7 @@
     };
 
     Reddit.prototype._post = function(pathname, options, params, callback) {
-      var details, error,
-        _this = this;
+      var details, error;
       if (options == null) {
         options = {};
       }
@@ -166,25 +170,26 @@
         name: "POST " + pathname,
         options: options
       };
-      return this._enqueue(details, function(finished) {
-        return _this._agent.post(url.format({
-          protocol: 'https',
-          host: 'ssl.reddit.com',
-          pathname: pathname
-        })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', _this._userAgent).send(options).end(function(res) {
-          if (res.status === 200) {
-            callback(null, res);
-          } else {
-            callback(new Error(JSON.stringify(details)));
-          }
-          return finished();
-        });
-      });
+      return this._enqueue(details, (function(_this) {
+        return function(finished) {
+          return _this._agent.post(url.format({
+            protocol: 'https',
+            host: 'ssl.reddit.com',
+            pathname: pathname
+          })).set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', _this._userAgent).send(options).end(function(res) {
+            if (res.status === 200) {
+              callback(null, res);
+            } else {
+              callback(new Error(JSON.stringify(details)));
+            }
+            return finished();
+          });
+        };
+      })(this));
     };
 
     Reddit.prototype._get = function(pathname, options, params, callback) {
-      var details, error,
-        _this = this;
+      var details, error;
       if (options == null) {
         options = {};
       }
@@ -204,21 +209,23 @@
         name: "GET " + pathname,
         options: options
       };
-      return this._enqueue(details, function(finished) {
-        return _this._agent.get(url.format({
-          protocol: 'https',
-          host: 'ssl.reddit.com',
-          pathname: pathname,
-          query: options
-        })).set('User-Agent', _this._userAgent).end(function(res) {
-          if (res.status === 200) {
-            callback(null, res);
-          } else {
-            callback(new Error(JSON.stringify(details)));
-          }
-          return finished();
-        });
-      });
+      return this._enqueue(details, (function(_this) {
+        return function(finished) {
+          return _this._agent.get(url.format({
+            protocol: 'https',
+            host: 'ssl.reddit.com',
+            pathname: pathname,
+            query: options
+          })).set('User-Agent', _this._userAgent).end(function(res) {
+            if (res.status === 200) {
+              callback(null, res);
+            } else {
+              callback(new Error(JSON.stringify(details)));
+            }
+            return finished();
+          });
+        };
+      })(this));
     };
 
     Reddit.prototype._checkParams = function(options, params) {
@@ -235,17 +242,6 @@
         return new Error("Missing parameters: " + missing);
       }
     };
-
-    /*
-    	 # Include the API categories.
-    */
-
-
-    _ref = ['account', 'apps', 'flair', 'links-and-comments', 'listings', 'private-messages', 'misc', 'moderation', 'search', 'subreddits', 'users', 'wiki'];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      category = _ref[_i];
-      require('.' + path.sep + path.join('api', category))(Reddit);
-    }
 
     return Reddit;
 

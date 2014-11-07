@@ -31,6 +31,14 @@ module.exports = class Reddit
 
         @_logging = false
 
+        # Include the API categories.
+        for category in [
+            'account', 'apps', 'flair', 'links-and-comments', 'listings'
+            'private-messages', 'misc', 'moderation', 'search', 'subreddits'
+            'users', 'wiki'
+        ]
+            require('.' + path.sep + path.join 'api', category) this
+
     util.inherits Reddit, events.EventEmitter
 
     # Set the dispatch mode
@@ -246,11 +254,3 @@ module.exports = class Reddit
         missing = missing.join ', '
 
         new Error "Missing parameters: #{missing}" unless missing is ''
-
-    # Include the API categories.
-    for category in [
-        'account', 'apps', 'flair', 'links-and-comments', 'listings'
-        'private-messages', 'misc', 'moderation', 'search', 'subreddits'
-        'users', 'wiki'
-    ]
-        require('.' + path.sep + path.join 'api', category) Reddit

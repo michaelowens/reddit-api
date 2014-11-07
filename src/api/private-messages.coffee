@@ -1,16 +1,17 @@
-module.exports = PrivateMessages = (Reddit) ->
-    Reddit::block = (thingId, modhash, callback) ->
+class PrivateMessages
+    constructor: (@reddit) ->
+    block: (thingId, modhash, callback) ->
         options =
             id: thingId
             uh: modhash
 
         params = Object.keys options
 
-        @_post '/api/block', options, params, (error, res) ->
+        @reddit._post '/api/block', options, params, (error, res) ->
             return callback error if error?
             callback.apply res
 
-    Reddit::compose = (
+    compose: (
         captchaResponse
         captchaId
         subject
@@ -29,7 +30,7 @@ module.exports = PrivateMessages = (Reddit) ->
 
         params = Object.keys options
 
-        @_post '/api/block', options, params, (error, res) ->
+        @reddit._post '/api/block', options, params, (error, res) ->
             return callback error if error?
             callback.apply res
 
@@ -38,29 +39,29 @@ module.exports = PrivateMessages = (Reddit) ->
     # @param thingId [String] The message ID
     # @param modhash [String] The modhash given by Reddit
     # @param callback [Function] The callback
-    Reddit::readMessage = (thingId, modhash, callback) ->
+    readMessage: (thingId, modhash, callback) ->
         options =
             id: thingId
             uh: modhash
 
         params = Object.keys options
 
-        @_post '/api/read_message', options, params, (error, res) ->
+        @reddit._post '/api/read_message', options, params, (error, res) ->
             return callback error if error?
             callback.apply res
 
-    Reddit::unreadMessage = (thingId, modhash, callback) ->
+    unreadMessage: (thingId, modhash, callback) ->
         options =
             id: thingId
             uh: modhash
 
         params = Object.keys options
 
-        @_post '/api/unread_message', options, params, (error, res) ->
+        @reddit._post '/api/unread_message', options, params, (error, res) ->
             return callback error if error?
             callback.apply res
 
-    Reddit::messages = (type, options, callback) ->
+    get: (type, options, callback) ->
         if typeof type is 'function'
             callback = type
             options = {}
@@ -70,6 +71,8 @@ module.exports = PrivateMessages = (Reddit) ->
             callback = options
             options = {}
 
-        @_get "/message/#{type}.json", options, (error, res) ->
+        @reddit._get "/message/#{type}.json", options, (error, res) ->
             return callback error if error?
             callback.apply res, [null, res.body.data?.children]
+
+module.exports = (reddit) -> reddit.messages = new PrivateMessages reddit

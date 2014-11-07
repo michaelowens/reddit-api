@@ -1,5 +1,6 @@
-module.exports = (Reddit) ->
-    Reddit::clearSessions = (modhash, password, url, callback) ->
+class Account
+    constructor: (@reddit) ->
+    clearSessions: (modhash, password, url, callback) ->
         options =
             curpass: password
             dest: url
@@ -7,11 +8,11 @@ module.exports = (Reddit) ->
 
         params = Object.keys options
 
-        @_post '/api/clear_sessions', options, params, (error, res) =>
+        @reddit._post '/api/clear_sessions', options, params, (error, res) =>
             return callback error if error?
             callback()
 
-    Reddit::deleteUser = (username, password, modhash, callback) ->
+    deleteUser: (username, password, modhash, callback) ->
         options =
             confirm: true
             passwd: password
@@ -20,11 +21,11 @@ module.exports = (Reddit) ->
 
         params = Object.keys options
 
-        @_post '/api/delete_user', options, params, (error, res) =>
+        @reddit._post '/api/delete_user', options, params, (error, res) =>
             return callback error if error?
             callback()
 
-    Reddit::login = (username, password, callback) ->
+    login: (username, password, callback) ->
         params = ['user', 'passwd']
 
         options =
@@ -33,8 +34,8 @@ module.exports = (Reddit) ->
             passwd: password
             rem: false
 
-        @_post '/api/login', options, params, (error, res) =>
-            @_agent.jar.setCookies([
+        @reddit._post '/api/login', options, params, (error, res) =>
+            @reddit._agent.jar.setCookies([
                 "reddit_session=#{res.body?.json?.data?.cookie}; Domain=reddit.com; Path=/; HttpOnly"
             ])
 
@@ -42,7 +43,7 @@ module.exports = (Reddit) ->
 
             callback null, res.body.json?.data?.modhash
 
-    Reddit::oAuthAuthorize = (clientId, clientSecret, state, code, scope = ['identity'], callback) ->
+    oAuthAuthorize: (clientId, clientSecret, state, code, scope = ['identity'], callback) ->
         if typeof scope is 'function'
             callback = scope
             scope = ['identity']
@@ -59,8 +60,8 @@ module.exports = (Reddit) ->
             name: "reddit OAuth authorization"
             options: options
 
-        @_enqueue details, (finished) =>
-            @_agent
+        @reddit._enqueue details, (finished) =>
+            @reddit._agent
                 .post("https://#{clientId}:#{clientSecret}@ssl.reddit.com/api/v1/access_token")
                 .set('Content-Type', 'application/x-www-form-urlencoded')
                 .set('User-Agent', @_userAgent)
@@ -73,14 +74,14 @@ module.exports = (Reddit) ->
 
                     finished()
 
-    Reddit::oAuthMe = (token, callback) ->
+    oAuthMe: (token, callback) ->
         details =
             name: "reddit OAuth Me"
             options:
                 token: token
 
-        @_enqueue details, (finished) =>
-            @_agent
+        @reddit._enqueue details, (finished) =>
+            @reddit._agent
                 .get('https://oauth.reddit.com/api/v1/me')
                 .set('Authorization', "bearer #{token}")
                 .set('User-Agent', @_userAgent)
@@ -92,12 +93,12 @@ module.exports = (Reddit) ->
 
                     finished()
 
-    Reddit::me = (callback) ->
-        @_get '/api/me.json', (error, res) ->
+    me: (callback) ->
+        @reddit._get '/api/me.json', (error, res) ->
             return callback error if error?
             callback null, res.body.data
 
-    Reddit::update = (password, email, newPassword, modhash, callback) ->
+    update: (password, email, newPassword, modhash, callback) ->
         options =
             curpass: password
             email: email
@@ -108,7 +109,9 @@ module.exports = (Reddit) ->
 
         params = Object.keys options
 
-        @_post '/api/update', options, params, (error, res) ->
+        @reddit._post '/api/update', options, params, (error, res) ->
             return callback error if error?
             callback()
+
+module.exports = (reddit) -> reddit.account = new Account reddit
 
