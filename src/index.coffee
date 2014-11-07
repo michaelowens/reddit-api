@@ -7,8 +7,8 @@ util = require 'util'
 
 # ## Properties
 #
-# * `account` - {Account}
-# * `messages` - {PrivateMessages}
+# * ({Account}) `account`
+# * ({PrivateMessages}) `messages`
 module.exports = class Reddit
 
     # Initializes the Reddit class
