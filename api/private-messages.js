@@ -32,7 +32,7 @@
         uh: modhash
       };
       params = Object.keys(options);
-      return this.reddit._post('/api/block', options, params, function(error, res) {
+      return this.reddit._post('/api/compose', options, params, function(error, res) {
         if (error != null) {
           return callback(error);
         }
@@ -40,7 +40,7 @@
       });
     };
 
-    PrivateMessages.prototype.readMessage = function(thingId, modhash, callback) {
+    PrivateMessages.prototype.read = function(thingId, modhash, callback) {
       var options, params;
       options = {
         id: thingId,
@@ -55,7 +55,7 @@
       });
     };
 
-    PrivateMessages.prototype.unreadMessage = function(thingId, modhash, callback) {
+    PrivateMessages.prototype.unread = function(thingId, modhash, callback) {
       var options, params;
       options = {
         id: thingId,

@@ -30,7 +30,7 @@ class PrivateMessages
 
         params = Object.keys options
 
-        @reddit._post '/api/block', options, params, (error, res) ->
+        @reddit._post '/api/compose', options, params, (error, res) ->
             return callback error if error?
             callback.apply res
 
@@ -39,7 +39,7 @@ class PrivateMessages
     # @param thingId [String] The message ID
     # @param modhash [String] The modhash given by Reddit
     # @param callback [Function] The callback
-    readMessage: (thingId, modhash, callback) ->
+    read: (thingId, modhash, callback) ->
         options =
             id: thingId
             uh: modhash
@@ -50,7 +50,7 @@ class PrivateMessages
             return callback error if error?
             callback.apply res
 
-    unreadMessage: (thingId, modhash, callback) ->
+    unread: (thingId, modhash, callback) ->
         options =
             id: thingId
             uh: modhash
