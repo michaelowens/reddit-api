@@ -6,10 +6,10 @@ url = require 'url'
 util = require 'util'
 
 module.exports = class Reddit
-    # @property [Account]
+    # @property [Account] Account methods
     account = null
 
-    # @property [PrivateMessages]
+    # @property [PrivateMessages] Messaging methods
     messages = null
 
     # Initializes the Reddit class
