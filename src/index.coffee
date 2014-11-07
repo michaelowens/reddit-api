@@ -6,8 +6,9 @@ url = require 'url'
 util = require 'util'
 
 # ## Properties
-# @property [Account] Account methods
-# @property [PrivateMessages] Messaging methods
+#
+# * `account` - {Account}
+# * `messages` - {PrivateMessages}
 module.exports = class Reddit
 
     # Initializes the Reddit class
