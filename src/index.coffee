@@ -5,6 +5,8 @@ superagent = require 'superagent'
 url = require 'url'
 util = require 'util'
 
+# @property [Account] #account
+# @property [Privatemessages] #messages
 module.exports = class Reddit
     # Initializes the Reddit class
     #
