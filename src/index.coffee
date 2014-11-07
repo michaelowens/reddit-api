@@ -5,11 +5,13 @@ superagent = require 'superagent'
 url = require 'url'
 util = require 'util'
 
-# @method #account
-#   @return [Account]
-# @method #messages
-#   @return [PrivateMessages]
 module.exports = class Reddit
+    # @property [Account]
+    account = null
+
+    # @property [PrivateMessages]
+    messages = null
+
     # Initializes the Reddit class
     #
     # @param _userAgent [String] User Agent to be used for HTTP calls
