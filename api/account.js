@@ -19,7 +19,7 @@
           if (error != null) {
             return callback(error);
           }
-          return callback();
+          return callback.apply(res);
         };
       })(this));
     };
@@ -38,7 +38,7 @@
           if (error != null) {
             return callback(error);
           }
-          return callback();
+          return callback.apply(res);
         };
       })(this));
     };
@@ -59,7 +59,7 @@
           if (error != null) {
             return callback(error);
           }
-          return callback(null, (_ref3 = res.body.json) != null ? (_ref4 = _ref3.data) != null ? _ref4.modhash : void 0 : void 0);
+          return callback.apply(res, [null, (_ref3 = res.body.json) != null ? (_ref4 = _ref3.data) != null ? _ref4.modhash : void 0 : void 0]);
         };
       })(this));
     };
@@ -89,7 +89,7 @@
         return function(finished) {
           return _this.reddit._agent.post("https://" + clientId + ":" + clientSecret + "@ssl.reddit.com/api/v1/access_token").set('Content-Type', 'application/x-www-form-urlencoded').set('User-Agent', _this._userAgent).send(options).end(function(res) {
             if (res.status === 200) {
-              callback(null, res.body);
+              callback.apply(res, [null, res.body]);
             } else {
               callback(new Error(JSON.stringify(details)));
             }
@@ -111,7 +111,7 @@
         return function(finished) {
           return _this.reddit._agent.get('https://oauth.reddit.com/api/v1/me').set('Authorization', "bearer " + token).set('User-Agent', _this._userAgent).end(function(res) {
             if (res.status === 200) {
-              callback(null, res.body);
+              callback.apply(res, [null, res.body]);
             } else {
               callback(new Error(JSON.stringify(details)));
             }
@@ -126,7 +126,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback(null, res.body.data);
+        return callback.apply(res, [null, res.body.data]);
       });
     };
 
@@ -145,7 +145,7 @@
         if (error != null) {
           return callback(error);
         }
-        return callback();
+        return callback.apply(res);
       });
     };
 

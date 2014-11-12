@@ -10,7 +10,7 @@ class Account
 
         @reddit._post '/api/clear_sessions', options, params, (error, res) =>
             return callback error if error?
-            callback()
+            callback.apply res
 
     deleteUser: (username, password, modhash, callback) ->
         options =
@@ -23,7 +23,7 @@ class Account
 
         @reddit._post '/api/delete_user', options, params, (error, res) =>
             return callback error if error?
-            callback()
+            callback.apply res
 
     login: (username, password, callback) ->
         params = ['user', 'passwd']
@@ -41,7 +41,7 @@ class Account
 
             return callback error if error?
 
-            callback null, res.body.json?.data?.modhash
+            callback.apply res, [null, res.body.json?.data?.modhash]
 
     oAuthAuthorize: (clientId, clientSecret, state, code, scope = ['identity'], callback) ->
         if typeof scope is 'function'
@@ -68,7 +68,7 @@ class Account
                 .send(options)
                 .end (res) ->
                     if res.status is 200
-                        callback null, res.body
+                        callback.apply res, [null, res.body]
                     else
                         callback new Error JSON.stringify details
 
@@ -87,7 +87,7 @@ class Account
                 .set('User-Agent', @_userAgent)
                 .end (res) ->
                     if res.status is 200
-                        callback null, res.body
+                        callback.apply res, [null, res.body]
                     else
                         callback new Error JSON.stringify details
 
@@ -96,7 +96,7 @@ class Account
     me: (callback) ->
         @reddit._get '/api/me.json', (error, res) ->
             return callback error if error?
-            callback null, res.body.data
+            callback.apply res, [null, res.body.data]
 
     update: (password, email, newPassword, modhash, callback) ->
         options =
@@ -111,7 +111,7 @@ class Account
 
         @reddit._post '/api/update', options, params, (error, res) ->
             return callback error if error?
-            callback()
+            callback.apply res
 
 module.exports = (reddit) -> reddit.account = new Account reddit
 

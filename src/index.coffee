@@ -38,7 +38,7 @@ module.exports = class Reddit
 
         # Include the API categories.
         for category in [
-            'account', 'apps', 'flair', 'links-and-comments', 'listings'
+            'account', 'apps', 'flair', 'links', 'comments', 'listings'
             'private-messages', 'misc', 'moderation', 'search', 'subreddits'
             'users', 'wiki'
         ]

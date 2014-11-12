@@ -31,7 +31,7 @@
       this._limiterFrequency = 2100;
       this._limiterInterval = null;
       this._logging = false;
-      _ref = ['account', 'apps', 'flair', 'links-and-comments', 'listings', 'private-messages', 'misc', 'moderation', 'search', 'subreddits', 'users', 'wiki'];
+      _ref = ['account', 'apps', 'flair', 'links', 'comments', 'listings', 'private-messages', 'misc', 'moderation', 'search', 'subreddits', 'users', 'wiki'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         category = _ref[_i];
         require('.' + path.sep + path.join('api', category))(this);
