@@ -19,76 +19,32 @@
       Index
     </a>
     &raquo;
-    <span class='title'>PrivateMessages</span>
+    <span class='title'>Links</span>
   </div>
 </div>
     <div id='content'>
       <h1>
         Class:
-        PrivateMessages
+        Links
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td>src&#47;api&#47;private-messages.coffee</td>
+          <td>src&#47;api&#47;links.coffee</td>
         </tr>
       </table>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
     <span class='signature'>
-      <a href='#block-dynamic'>
+      <a href='#submit-dynamic'>
         #
 (void)
-<b>block</b><span>(thingId, modhash, callback)</span>
+<b>submit</b><span>(givenOptions, callback)</span>
       </a>
     </span>
     <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#compose-dynamic'>
-        #
-(void)
-<b>compose</b><span>(captchaResponse, captchaId, subject, message, to, modhash, callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#read-dynamic'>
-        #
-(void)
-<b>read</b><span>(thingId, modhash, callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      Mark a private message as read 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#unread-dynamic'>
-        #
-(void)
-<b>unread</b><span>(thingId, modhash, callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#get-dynamic'>
-        #
-(void)
-<b>get</b><span>(type, options, callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
+      Submit a link to a subreddit 
     </span>
   </li>
 </ul>
@@ -107,55 +63,27 @@
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='block-dynamic'>
+    <p class='signature' id='submit-dynamic'>
       #
 (void)
-<b>block</b><span>(thingId, modhash, callback)</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='compose-dynamic'>
-      #
-(void)
-<b>compose</b><span>(captchaResponse, captchaId, subject, message, to, modhash, callback)</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='read-dynamic'>
-      #
-(void)
-<b>read</b><span>(thingId, modhash, callback)</span>
+<b>submit</b><span>(givenOptions, callback)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>Mark a private message as read</p>
+  <p>Submit a link to a subreddit</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>thingId</span>
+      <span class='name'>givenOptions</span>
       <span class='type'>
         (
-          <tt>String</tt>
+          <tt>Object</tt>
         )
       </span>
       &mdash;
-      <span class='desc'>The message ID </span>
-    </li>
-    <li>
-      <span class='name'>modhash</span>
-      <span class='type'>
-        (
-          <tt>String</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The modhash given by Reddit </span>
+      <span class='desc'>The options for the submit call </span>
     </li>
     <li>
       <span class='name'>callback</span>
@@ -168,25 +96,73 @@
       <span class='desc'>The callback </span>
     </li>
   </ul>
+  <h3>
+    Options Hash:
+    (givenOptions):
+  </h3>
+  <ul class='options'>
+    <li>
+      <span class='name'>subreddit</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'><code>required</code> The name of the subreddit to submit to </span>
+    </li>
+    <li>
+      <span class='name'>subject</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'><code>required</code> The subject of the post </span>
+    </li>
+    <li>
+      <span class='name'>modhash</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'><code>required</code> </span>
+    </li>
+    <li>
+      <span class='name'>url</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'><code>required (or text)</code> The link to submit </span>
+    </li>
+    <li>
+      <span class='name'>text</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'><code>required (or url)</code> The text to submit </span>
+    </li>
+    <li>
+      <span class='name'>resubmit</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Resubmit if link was already posted to the subreddit before </span>
+    </li>
+  </ul>
 </div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='unread-dynamic'>
-      #
-(void)
-<b>unread</b><span>(thingId, modhash, callback)</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='get-dynamic'>
-      #
-(void)
-<b>get</b><span>(type, options, callback)</span>
-      <br>
-    </p>
-    
   </div>
 </div>
     </div>
